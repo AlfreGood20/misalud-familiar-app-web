@@ -26,4 +26,4 @@ npm install
 npm run dev
 ```
 
-> **IMPORTANTE:** En los modulos de `services`cambiar la url de la api por la url correspodiente (`const API_URL = 'URL API';`) por defecto tenemos una local en puerto 8080.
+> **IMPORTANTE:** Crea un `.env` en la raiz del proyecto y adentro de ese archivo agrega la url de la api, `VITE_API_URL = 'https://api-url...'` para que el sistema pueda ser usable.
