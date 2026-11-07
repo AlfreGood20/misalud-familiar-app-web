@@ -1,16 +1,13 @@
 import {
   CheckIcon,
   HeartIcon,
-  PlusIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 
 function Brand() {
   return (
     <div className="flex items-center gap-2.5 text-lg font-bold tracking-tight">
-      <span className="grid size-9 place-items-center rounded-xl bg-[#b8f0df] text-[#0b6673]">
-        <PlusIcon className="size-5" aria-hidden="true" />
-      </span>
+      <img src="/logo-icon.svg" alt="MiSalud Familiar" className="size-9 rounded-xl" />
       <span>MiSalud Familiar</span>
     </div>
   );
