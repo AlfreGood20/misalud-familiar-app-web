@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   ArrowRightOnRectangleIcon,
   BellAlertIcon,
@@ -7,12 +8,11 @@ import {
   Cog6ToothIcon,
   CubeIcon,
   HomeIcon,
-  PlusIcon,
   UserGroupIcon,
-  UserIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import { NavLink } from 'react-router-dom';
+import { getCurrentUser } from '../../services/authService';
 
 const navigationItems = [
   { label: 'Resumen', icon: HomeIcon, to: '/dashboard' },
@@ -26,23 +26,40 @@ const navigationItems = [
 ];
 
 function DashboardSidebar({ familyName, onLogout }) {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getCurrentUser().then((result) => {
+      if (!cancelled) setUser(result);
+    }).catch((error) => {
+      if (!cancelled) {
+        console.error('Error al cargar el usuario autenticado:', error);
+      }
+    });
+
+    return () => { cancelled = true; };
+  }, []);
+
+  const fullName = user
+    ? [user.nombre, user.apellidoPaterno, user.apellidoMaterno].filter(Boolean).join(' ')
+    : familyName || 'Usuario';
+  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=d4f1eb&color=126f7b&bold=true`;
+  const role = user?.rol?.replaceAll('_', ' ') || 'Administrador';
+
   return (
     <aside className="flex w-full shrink-0 flex-col border-b border-slate-200 bg-white lg:fixed lg:inset-y-0 lg:left-0 lg:w-72 lg:border-b-0 lg:border-r">
       <div className="flex items-center gap-2.5 border-b border-slate-100 px-5 py-5 text-lg font-bold tracking-tight text-[#19304a] lg:px-7">
-        <span className="grid size-9 place-items-center rounded-xl bg-[#b8f0df] text-[#0b6673]">
-          <PlusIcon className="size-5" aria-hidden="true" />
-        </span>
+        <img src="/logo-icon.svg" alt="MiSalud Familiar" className="size-9 rounded-xl" />
         MiSalud Familiar
       </div>
 
       <div className="hidden px-5 py-5 lg:block">
         <div className="flex items-center gap-3 rounded-2xl bg-[#f1faf8] p-3">
-          <div className="grid size-10 place-items-center rounded-xl bg-[#d4f1eb] text-[#126f7b]">
-            <UserIcon className="size-5" aria-hidden="true" />
-          </div>
+          <img src={avatarUrl} alt={`Avatar de ${fullName}`} className="size-10 rounded-xl" />
           <div className="min-w-0">
-            <p className="truncate text-sm font-bold text-[#19304a]">{familyName}</p>
-            <p className="text-xs text-slate-500">Administrador</p>
+            <p className="truncate text-sm font-bold text-[#19304a]">{role}</p>
+            <p className="truncate text-xs text-slate-500">{user?.correo || 'Sesión activa'}</p>
           </div>
         </div>
       </div>
