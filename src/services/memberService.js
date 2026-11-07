@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8080';
+const API_URL = import.meta.env.VITE_API_URL;
 
 async function parseResponse(response, message) {
   if (!response.ok) throw new Error(`${message}: ${response.status}`);
@@ -33,11 +33,23 @@ export async function createIntegrante(data) {
 
 export async function updateIntegrante(idIntegrante, data) {
   // CONSUMO DE API: actualiza los datos básicos del integrante.
+  const payload = {
+    nombre: data.nombre,
+    apellidoPaterno: data.apellidoPaterno,
+    apellidoMaterno: data.apellidoMaterno,
+    fechaNacimiento: data.fechaNacimiento,
+    peso: Number(data.peso),
+    estatura: Number(data.estatura),
+    sexo: data.sexo,
+    tipoSangre: data.tipoSangre,
+    parentesco: data.parentesco,
+  };
+
   return parseResponse(await fetch(`${API_URL}/integrantes/${idIntegrante}`, {
     method: 'PUT',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+    body: JSON.stringify(payload),
   }), 'Error al actualizar integrante');
 }
 
@@ -57,7 +69,7 @@ export async function getAlergias(filters = {}) {
 
   // CONSUMO DE API: obtiene el catálogo global de alergias.
   return parseResponse(
-    await fetch(`http://localhost:8080/alergia${query ? `?${query}` : ''}`, {
+    await fetch(`${API_URL}/alergias${query ? `?${query}` : ''}`, {
       credentials: 'include',
     }),
     'Error al obtener alergias',
@@ -66,7 +78,7 @@ export async function getAlergias(filters = {}) {
 
 export async function addAlergiaToIntegrante(idIntegrante, data) {
   // CONSUMO DE API: asigna una alergia al integrante.
-  return parseResponse(await fetch(`http://localhost:8080/integrantes/${idIntegrante}/alergias`, {
+  return parseResponse(await fetch(`${API_URL}/integrantes/${idIntegrante}/alergias`, {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
