@@ -3,5 +3,5 @@ export const relationships = ['ESPOSO', 'ESPOSA', 'PAREJA', 'PADRE', 'MADRE', 'H
 
 export const emptyMember = {
   nombre: '', apellidoPaterno: '', apellidoMaterno: '', fechaNacimiento: '',
-  sexo: '', tipoSangre: 'SIN_DEFINIR', parentesco: '',
+  peso: 0, estatura: 0, sexo: '', tipoSangre: 'SIN_DEFINIR', parentesco: '',
 };

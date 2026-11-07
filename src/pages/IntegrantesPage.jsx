@@ -74,13 +74,21 @@ function IntegrantesPage() {
     event.preventDefault();
     setSubmitting(true);
     try {
+      const peso = Number(formData.peso);
+      const estatura = Number(formData.estatura);
+      if (!Number.isFinite(peso) || !Number.isFinite(estatura) || peso < 0 || estatura < 0) {
+        toast.error('Ingresa un peso y una estatura válidos.');
+        return;
+      }
+
+      const payload = { ...formData, peso, estatura };
       if (editing) {
         // CONSUMO DE API: PUT /integrantes/{idIntegrante}.
-        await updateIntegrante(formData.id, formData);
+        await updateIntegrante(formData.id, payload);
         toast.success('Integrante actualizado.');
       } else {
         // CONSUMO DE API: POST /integrantes.
-        await createIntegrante(formData);
+        await createIntegrante(payload);
         toast.success('Integrante creado.');
       }
       setFormVisible(false);
@@ -165,6 +173,8 @@ function IntegrantesPage() {
       apellidoPaterno: member.apellidoPaterno ?? '',
       apellidoMaterno: member.apellidoMaterno ?? '',
       fechaNacimiento: member.fechaNacimiento,
+      peso: member.peso ?? 0,
+      estatura: member.estatura ?? 0,
       sexo: member.sexo,
       tipoSangre: member.tipoSangre,
       parentesco: member.parentesco,

@@ -16,6 +16,8 @@ function MemberForm({ value, editing, submitting, onChange, onSubmit, onCancel }
           <Field label="Apellido paterno" required {...field('apellidoPaterno')} />
           <Field label="Apellido materno" required {...field('apellidoMaterno')} />
           <Field label="Fecha de nacimiento" type="date" icon={<CalendarDaysIcon />} required {...field('fechaNacimiento')} />
+          <Field label="Peso (kg)" type="number" min="0" step="0.01" required {...field('peso')} />
+          <Field label="Estatura (cm)" type="number" min="0" step="0.01" required {...field('estatura')} />
           <Select label="Sexo" required {...field('sexo')} options={['MASCULINO', 'FEMENINO']} />
           <Select label="Tipo de sangre" required {...field('tipoSangre')} options={bloodTypes} />
         </div>

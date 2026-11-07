@@ -11,6 +11,23 @@ function displayValue(value) {
   return value ? value.replaceAll('_', ' ') : 'Sin información';
 }
 
+function calculateAge(value) {
+  if (!value) return 'Sin información';
+
+  const birthDate = new Date(`${value.slice(0, 10)}T00:00:00`);
+  if (Number.isNaN(birthDate.getTime())) return 'Sin información';
+
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const birthdayHasPassed = (
+    today.getMonth() > birthDate.getMonth()
+    || (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate())
+  );
+
+  if (!birthdayHasPassed) age -= 1;
+  return age >= 0 ? `${age} años` : 'Sin información';
+}
+
 function MemberDetailModal({
   member,
   loading,
@@ -61,6 +78,9 @@ function MemberDetailModal({
               <div className="grid gap-3 sm:grid-cols-2">
                 {[
                   ['Fecha de nacimiento', formatDate(member.fechaNacimiento)],
+                  ['Edad', calculateAge(member.fechaNacimiento)],
+                  ['Peso', member.peso !== null && member.peso !== undefined ? `${member.peso} kg` : 'Sin información'],
+                  ['Estatura', member.estatura !== null && member.estatura !== undefined ? `${member.estatura} cm` : 'Sin información'],
                   ['Sexo', displayValue(member.sexo)],
                   ['Tipo de sangre', displayValue(member.tipoSangre)],
                   ['Registro', formatDate(member.fechaRegistro)],

@@ -37,6 +37,8 @@ function MemberCard({ member, onOpen }) {
 
         <div className="grid gap-3 sm:grid-cols-2">
           <DataItem label="Fecha de nacimiento" value={formatDate(member.fechaNacimiento)} icon={<CalendarDaysIcon />} />
+          <DataItem label="Peso" value={member.peso !== null && member.peso !== undefined ? `${member.peso} kg` : 'Sin información'} />
+          <DataItem label="Estatura" value={member.estatura !== null && member.estatura !== undefined ? `${member.estatura} cm` : 'Sin información'} />
           <DataItem label="Sexo" value={displayValue(member.sexo)} />
           <DataItem label="Tipo de sangre" value={displayValue(member.tipoSangre)} />
           <DataItem label="Fecha de registro" value={formatDate(member.fechaRegistro)} />

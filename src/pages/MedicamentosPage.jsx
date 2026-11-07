@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BeakerIcon, ChevronLeftIcon, ChevronRightIcon, CubeIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import DashboardSidebar from '../components/dashboard/DashboardSidebar';
@@ -20,12 +20,15 @@ const initialFilters = {
 
 async function requestMedications(currentFilters) {
   const response = await getMedicamentos(currentFilters);
+  const totalElements = response.page?.totalElements ?? 0;
+  const totalPages = response.page?.totalPages || Math.ceil(totalElements / currentFilters.size);
+
   return {
     medications: response.content ?? [],
     pageInfo: {
       number: response.page?.number ?? currentFilters.page,
-      totalPages: response.page?.totalPages ?? 0,
-      totalElements: response.page?.totalElements ?? 0,
+      totalPages,
+      totalElements,
     },
   };
 }
@@ -39,16 +42,40 @@ function MedicamentosPage() {
   const [loading, setLoading] = useState(true);
   const [selectedMedication, setSelectedMedication] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
+  const filtersInitialized = useRef(false);
+  const {
+    nombreComercial,
+    sustanciaActiva,
+    formaFarmaceutica,
+    viaAdministracion,
+    activo,
+  } = filters;
 
   useEffect(() => {
-    const filtersChanged = Object.keys(filters).some((key) => filters[key] !== queryFilters[key]);
-    if (!filtersChanged) return undefined;
+    if (!filtersInitialized.current) {
+      filtersInitialized.current = true;
+      return undefined;
+    }
 
     const timer = setTimeout(() => {
-      setQueryFilters({ ...filters, page: 0 });
+      setQueryFilters((current) => ({
+        ...current,
+        nombreComercial,
+        sustanciaActiva,
+        formaFarmaceutica,
+        viaAdministracion,
+        activo,
+        page: 0,
+      }));
     }, 350);
     return () => clearTimeout(timer);
-  }, [filters, queryFilters]);
+  }, [
+    nombreComercial,
+    sustanciaActiva,
+    formaFarmaceutica,
+    viaAdministracion,
+    activo,
+  ]);
 
   useEffect(() => {
     let cancelled = false;
