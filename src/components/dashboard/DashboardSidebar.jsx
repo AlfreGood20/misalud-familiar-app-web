@@ -18,7 +18,7 @@ const navigationItems = [
   { label: 'Resumen', icon: HomeIcon, to: '/dashboard' },
   { label: 'Integrantes', icon: UserGroupIcon, to: '/integrantes' },
   { label: 'Cuidadores', icon: ShieldCheckIcon, to: '/cuidadores' },
-  { label: 'Consultas médicas', icon: CalendarDaysIcon },
+  { label: 'Consultas médicas', icon: CalendarDaysIcon, to: '/consultas' },
   { label: 'Medicamentos', icon: CubeIcon, to: '/medicamentos' },
   { label: 'Vacunas', icon: BeakerIcon },
   { label: 'Estudios de laboratorio', icon: ChartBarIcon },
