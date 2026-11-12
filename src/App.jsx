@@ -5,6 +5,7 @@ import DashboardPage from './pages/DashboardPage';
 import MedicamentosPage from './pages/MedicamentosPage';
 import IntegrantesPage from './pages/IntegrantesPage';
 import CuidadoresPage from './pages/CuidadoresPage';
+import ConsultasPage from './pages/ConsultasPage';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/medicamentos" element={<MedicamentosPage />} />
         <Route path="/integrantes" element={<IntegrantesPage />} />
         <Route path="/cuidadores" element={<CuidadoresPage />} />
+        <Route path="/consultas" element={<ConsultasPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
