@@ -12,6 +12,8 @@ import MemberCard from '../components/dashboard/MemberCard';
 import MemberDetails from '../components/dashboard/MemberDetails';
 import SummaryCard from '../components/dashboard/SummaryCard';
 import DashboardSidebar from '../components/dashboard/DashboardSidebar';
+import StockAlertsPanel from '../components/dashboard/StockAlertsPanel';
+import useStockAlerts from '../components/stock/useStockAlerts';
 
 const dashboardExample = {
   familia: { nombre: 'Familia García' },
@@ -61,6 +63,7 @@ const dashboardExample = {
 function DashboardPage() {
   const navigate = useNavigate();
   const [selectedMember, setSelectedMember] = useState(null);
+  const { alerts: stockAlerts, loading: stockAlertsLoading } = useStockAlerts();
 
   // API DEL DASHBOARD:
   // Sustituye dashboardExample por:
@@ -93,8 +96,12 @@ function DashboardPage() {
           <SummaryCard icon={<HeartIcon className="size-6" />} label="Integrantes" value={dashboard.resumen.integrantes} description="Personas en tu familia" />
           <SummaryCard icon={<CalendarDaysIcon className="size-6" />} label="Consultas" value={dashboard.resumen.consultas} description="Próximas o pendientes" tone="blue" />
           <SummaryCard icon={<CubeIcon className="size-6" />} label="Medicamentos" value={dashboard.resumen.medicamentos} description="Registrados actualmente" tone="orange" />
-          <SummaryCard icon={<BellAlertIcon className="size-6" />} label="Alertas" value={dashboard.resumen.alertas} description="Requieren tu atención" tone="red" />
+          <SummaryCard icon={<BellAlertIcon className="size-6" />} label="Alertas" value={stockAlertsLoading ? '…' : stockAlerts.length} description="Requieren tu atención" tone="red" />
         </section>
+
+        <div className="mt-10">
+          <StockAlertsPanel alerts={stockAlerts} loading={stockAlertsLoading} />
+        </div>
 
         <section className="mt-10">
           <div className="mb-4 flex items-center justify-between">

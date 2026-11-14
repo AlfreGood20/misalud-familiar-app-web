@@ -12,8 +12,9 @@ import {
   UserGroupIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { getCurrentUser } from '../../services/authService';
+import useStockAlerts from '../stock/useStockAlerts';
 
 const navigationItems = [
   { label: 'Resumen', icon: HomeIcon, to: '/dashboard' },
@@ -24,11 +25,14 @@ const navigationItems = [
   { label: 'Stock', icon: ArchiveBoxIcon, to: '/stock' },
   { label: 'Vacunas', icon: BeakerIcon },
   { label: 'Estudios de laboratorio', icon: ChartBarIcon },
-  { label: 'Alertas', icon: BellAlertIcon, badge: 1 },
+  { label: 'Alertas', icon: BellAlertIcon, href: '/stock' },
 ];
 
 function DashboardSidebar({ familyName, onLogout }) {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const { alerts } = useStockAlerts();
+  const alertCount = alerts.length;
 
   useEffect(() => {
     let cancelled = false;
@@ -87,11 +91,14 @@ function DashboardSidebar({ familyName, onLogout }) {
           <button
             key={item.label}
             type="button"
+            onClick={() => item.href && navigate(item.href)}
             className="group flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-500 transition hover:bg-slate-50 hover:text-[#126f7b] lg:w-full"
           >
             <item.icon className="size-5 text-slate-400 group-hover:text-[#15919a]" aria-hidden="true" />
             <span className="whitespace-nowrap">{item.label}</span>
-            {item.badge && <span className="badge badge-sm ml-auto bg-[#fff3df] text-[#bd7419]">{item.badge}</span>}
+            {item.label === 'Alertas' && alertCount > 0 && (
+              <span className="badge badge-sm ml-auto bg-[#fff3df] text-[#bd7419]">{alertCount}</span>
+            )}
           </button>
         ))}
 

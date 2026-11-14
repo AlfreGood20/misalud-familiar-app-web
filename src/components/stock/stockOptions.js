@@ -27,6 +27,42 @@ export function isLowStock(stock) {
   return stock.estado === 'DISPONIBLE' && stock.cantidad <= stock.cantidadMinima;
 }
 
+export const EXPIRING_DAYS = 30;
+
+// Convierte el listado de stock en alertas: agotado, caducado, stock bajo o por caducar.
+export function buildStockAlerts(items) {
+  const alerts = [];
+
+  items.forEach((stock) => {
+    const days = getDaysToExpire(stock.fechaCaducidad);
+
+    if (stock.estado === 'AGOTADO') {
+      alerts.push({ id: `${stock.id}-agotado`, type: 'AGOTADO', message: 'Medicamento agotado', stock });
+    } else if (stock.estado === 'CADUCADO') {
+      alerts.push({ id: `${stock.id}-caducado`, type: 'CADUCADO', message: 'Medicamento caducado', stock });
+    } else if (stock.estado === 'DISPONIBLE') {
+      if (stock.cantidad <= stock.cantidadMinima) {
+        alerts.push({
+          id: `${stock.id}-bajo`,
+          type: 'BAJO',
+          message: `Stock bajo: ${stock.cantidad} de ${stock.cantidadMinima} mínimos`,
+          stock,
+        });
+      }
+      if (days !== null && days <= EXPIRING_DAYS) {
+        alerts.push({
+          id: `${stock.id}-porcaducar`,
+          type: 'POR_CADUCAR',
+          message: days <= 0 ? 'Caduca hoy' : `Caduca en ${days} ${days === 1 ? 'día' : 'días'}`,
+          stock,
+        });
+      }
+    }
+  });
+
+  return alerts;
+}
+
 export function getTodayDate() {
   const date = new Date();
   const offset = date.getTimezoneOffset() * 60000;
