@@ -76,7 +76,7 @@ function DashboardSidebar({ familyName, onLogout }) {
           <NavLink
             key={item.label}
             to={item.to}
-            className={({ isActive }) => `group flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition lg:w-full ${
+            className={({ isActive }) => `group flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition duration-200 active:scale-95 lg:w-full ${
               isActive ? 'bg-[#e5f7f4] text-[#126f7b]' : 'text-slate-500 hover:bg-slate-50 hover:text-[#126f7b]'
             }`}
           >
@@ -110,7 +110,7 @@ function DashboardSidebar({ familyName, onLogout }) {
       </nav>
 
       <div className="hidden border-t border-slate-100 p-4 lg:block">
-        <button type="button" onClick={onLogout} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-500 transition hover:bg-red-50 hover:text-red-600">
+        <button type="button" onClick={onLogout} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-500 transition hover:bg-red-50 hover:text-red-600 active:scale-95">
           <ArrowRightOnRectangleIcon className="size-5" aria-hidden="true" />
           Cerrar sesión
         </button>

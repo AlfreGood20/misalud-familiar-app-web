@@ -16,10 +16,10 @@ function ConfirmDialog({
         <h3 id="confirm-dialog-title" className="text-lg font-bold text-[#19304a]">{title}</h3>
         <p className="py-4 text-slate-600">{message}</p>
         <div className="modal-action">
-          <button type="button" className="btn btn-ghost" onClick={onCancel} disabled={loading}>
+          <button type="button" className="btn transition-all duration-200 active:scale-95 btn-ghost" onClick={onCancel} disabled={loading}>
             Cancelar
           </button>
-          <button type="button" className="btn btn-error text-white" onClick={onConfirm} disabled={loading}>
+          <button type="button" className="btn transition-all duration-200 active:scale-95 btn-error text-white" onClick={onConfirm} disabled={loading}>
             {loading && <span className="loading loading-spinner loading-xs" />}
             {loading ? loadingLabel : confirmLabel}
           </button>

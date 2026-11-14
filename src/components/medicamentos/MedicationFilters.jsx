@@ -35,7 +35,7 @@ function MedicationFilters({ filters, onChange, onSubmit, onClear }) {
             <span className="label-text text-sm text-slate-600">Solo medicamentos activos</span>
           </label>
           <div className="flex gap-2">
-            <button type="button" onClick={onClear} className="btn btn-ghost btn-sm">Limpiar</button>
+            <button type="button" onClick={onClear} className="btn transition-all duration-200 active:scale-95 btn-ghost btn-sm">Limpiar</button>
           </div>
         </div>
       </div>

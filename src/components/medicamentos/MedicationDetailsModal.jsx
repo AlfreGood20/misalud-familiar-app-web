@@ -11,7 +11,7 @@ function MedicationDetailsModal({ medication, loading, onClose }) {
             <span className="grid size-10 place-items-center rounded-xl bg-[#e5f7f4] text-[#15919a]"><BeakerIcon className="size-5" /></span>
             <div><p className="text-xs font-bold uppercase tracking-wide text-[#15919a]">Catálogo</p><h2 id="medication-detail-title" className="font-bold text-[#19304a]">Detalle del medicamento</h2></div>
           </div>
-          <button type="button" onClick={onClose} className="btn btn-circle btn-ghost btn-sm" aria-label="Cerrar detalle"><XMarkIcon className="size-5" /></button>
+          <button type="button" onClick={onClose} className="btn transition-all duration-200 active:scale-95 btn-circle btn-ghost btn-sm" aria-label="Cerrar detalle"><XMarkIcon className="size-5" /></button>
         </div>
         {loading ? <div className="flex min-h-72 items-center justify-center"><span className="loading loading-spinner loading-lg text-[#15919a]" /></div> : (
           <div className="max-h-[calc(90vh-6.5rem)] space-y-5 overflow-y-auto p-6">

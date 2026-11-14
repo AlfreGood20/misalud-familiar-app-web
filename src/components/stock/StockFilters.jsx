@@ -27,7 +27,7 @@ function StockFilters({ filters, onChange, onClear }) {
             <input type="checkbox" name="bajoMinimo" checked={filters.bajoMinimo} onChange={onChange} className="checkbox checkbox-sm [--chkbg:#15919a] [--chkfg:white]" />
             <span className="label-text text-sm text-slate-600">Solo con stock igual o menor al mínimo</span>
           </label>
-          <button type="button" onClick={onClear} className="btn btn-ghost btn-sm">Limpiar</button>
+          <button type="button" onClick={onClear} className="btn transition-all duration-200 active:scale-95 btn-ghost btn-sm">Limpiar</button>
         </div>
       </div>
     </form>

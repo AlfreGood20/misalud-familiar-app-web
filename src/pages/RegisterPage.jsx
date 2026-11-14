@@ -20,6 +20,7 @@ function RegisterPage() {
   const [registrationData, setRegistrationData] = useState(initialRegistrationData);
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -44,6 +45,7 @@ function RegisterPage() {
       return;
     }
     
+    setSubmitting(true);
     try{
       await toast.promise(postRegistro(registrationData), {
         loading: 'Validando datos...',
@@ -53,16 +55,18 @@ function RegisterPage() {
       navigate('/', { replace: true });
     }catch(error){
       console.error('Error al registrarse:', error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
     <AuthLayout wide>
-      <Link className="mb-7 inline-flex items-center gap-1.5 text-xs font-bold text-[#126f7b] hover:underline" to="/">
-        <ArrowLeftIcon className="size-4" aria-hidden="true" /> Volver al inicio de sesión
+      <Link className="group mb-7 inline-flex items-center gap-1.5 text-xs font-bold text-[#126f7b] transition hover:underline" to="/">
+        <ArrowLeftIcon className="size-4 transition-transform duration-200 group-hover:-translate-x-1" aria-hidden="true" /> Volver al inicio de sesión
       </Link>
       <span className="mb-4 block text-xs font-extrabold uppercase tracking-[0.13em] text-[#15919a]">Crea tu cuenta</span>
-      <h2 className="text-4xl font-bold tracking-tight text-[#19304a]">Registro familiar</h2>
+      <h2 className="text-3xl font-bold tracking-tight text-[#19304a] sm:text-4xl">Registro familiar</h2>
       <p className="mb-8 mt-2.5 leading-6 text-slate-500">Registra tus datos y los de tu familia para comenzar.</p>
 
       <form onSubmit={handleSubmit} className="space-y-1">
@@ -73,7 +77,7 @@ function RegisterPage() {
           <Field label="Fecha de nacimiento" id="fechaNacimiento" type="date" icon={<CalendarDaysIcon />} value={registrationData.fechaNacimiento} onChange={handleChange} max="2016-12-31" />
           <div>
             <label className="label px-0 pb-1.5" htmlFor="sexo"><span className="label-text font-bold text-[#29425d]">Sexo</span></label>
-            <select className="select select-bordered mb-4 w-full bg-white focus:outline-[#15919a]" id="sexo" name="sexo" value={registrationData.sexo} onChange={handleChange} required>
+            <select className="select select-bordered mb-4 w-full bg-white transition duration-200 hover:border-[#8dd5cd] focus:shadow-md focus:shadow-[#15919a]/10 focus:outline-[#15919a]" id="sexo" name="sexo" value={registrationData.sexo} onChange={handleChange} required>
               <option value="">Selecciona una opción</option><option value="MASCULINO">Masculino</option><option value="FEMENINO">Femenino</option>
             </select>
           </div>
@@ -90,7 +94,11 @@ function RegisterPage() {
           <Field label="Nombre de la familia" id="familia.nombre" value={registrationData.familia.nombre} onChange={handleChange} placeholder="Familia García" />
           <Field label="Dirección" id="familia.direccion" icon={<MapPinIcon />} value={registrationData.familia.direccion} onChange={handleChange} placeholder="Dirección familiar" />
         </div>
-        <button className="btn mt-3 w-full border-0 bg-[#126f7b] text-white shadow-lg shadow-[#126f7b]/20 hover:bg-[#0b5d69]" type="submit">Crear mi cuenta <ArrowRightIcon className="size-5" aria-hidden="true" /></button>
+        <button className="btn group mt-3 h-12 w-full border-0 bg-[#126f7b] text-white shadow-lg shadow-[#126f7b]/25 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-xl active:translate-y-0 active:scale-[0.98] disabled:bg-[#126f7b] disabled:text-white disabled:opacity-70" type="submit" disabled={submitting}>
+          {submitting && <span className="loading loading-spinner loading-sm" />}
+          {submitting ? 'Creando cuenta...' : 'Crear mi cuenta'}
+          {!submitting && <ArrowRightIcon className="size-5 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />}
+        </button>
       </form>
       {message && <p className="alert mt-3 border-0 bg-[#e0f5ef] p-3 text-xs text-[#176b67]" role="status">{message}</p>}
     </AuthLayout>
@@ -101,10 +109,10 @@ function Field({ label, id, icon, type = 'text', value, onChange, placeholder, m
   return (
     <div>
       <label className="label px-0 pb-1.5" htmlFor={id}><span className="label-text font-bold text-[#29425d]">{label}</span></label>
-      <label className="input input-bordered mb-4 flex w-full items-center gap-2 bg-white focus-within:outline-[#15919a]">
+      <label className="input input-bordered mb-4 flex w-full items-center gap-2 bg-white transition duration-200 hover:border-[#8dd5cd] focus-within:shadow-md focus-within:shadow-[#15919a]/10 focus-within:outline-[#15919a]">
         {icon && <span className="text-[#15919a] [&>svg]:size-5"><span aria-hidden="true">{icon}</span></span>}
         <input id={id} name={id} type={type} className="grow" value={value} onChange={onChange} placeholder={placeholder} minLength={minLength} max={max} maxLength={maxLength} inputMode={inputMode} required />
-        {togglePassword && <button type="button" className="inline-flex items-center gap-1 text-xs font-bold text-[#126f7b] hover:underline" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'} aria-pressed={showPassword}>
+        {togglePassword && <button type="button" className="inline-flex items-center gap-1 rounded-md px-1 text-xs font-bold text-[#126f7b] transition hover:bg-[#eaf8f5] active:scale-95" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'} aria-pressed={showPassword}>
           {showPassword ? <EyeSlashIcon className="size-4" aria-hidden="true" /> : <EyeIcon className="size-4" aria-hidden="true" />}{showPassword ? 'Ocultar' : 'Ver'}
         </button>}
       </label>

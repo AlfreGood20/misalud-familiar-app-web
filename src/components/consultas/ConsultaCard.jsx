@@ -37,7 +37,7 @@ function ConsultaCard({ consulta, onSelect }) {
   const styles = statusStyles[consulta.estado] ?? statusStyles.PROGRAMADA;
 
   return (
-    <button type="button" onClick={() => onSelect(consulta)} className={`card h-full min-h-72 w-full cursor-pointer border bg-white text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${styles.border}`}>
+    <button type="button" onClick={() => onSelect(consulta)} className={`card h-full min-h-72 w-full cursor-pointer border bg-white text-left shadow-sm transition duration-300 starting:translate-y-2 starting:opacity-0 hover:-translate-y-0.5 hover:shadow-md ${styles.border}`}>
       <div className="card-body flex h-full p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2 text-sm font-semibold text-slate-500">

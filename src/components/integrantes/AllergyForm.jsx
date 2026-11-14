@@ -84,7 +84,7 @@ function AllergyForm({ allergies, allergyType, allergiesLoading, submitting, onT
         <button
           type="submit"
           disabled={submitting || allergiesLoading || allergies.length === 0}
-          className="btn btn-sm w-full border-0 bg-[#126f7b] text-white hover:bg-[#0b5d69]"
+          className="btn transition-all duration-200 active:scale-95 btn-sm w-full border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg"
         >
           {submitting && <span className="loading loading-spinner loading-xs" />}
           Guardar alergia

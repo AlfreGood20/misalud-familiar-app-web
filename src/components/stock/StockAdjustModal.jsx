@@ -17,7 +17,7 @@ function StockAdjustModal({ stock, submitting, onClose, onSubmit }) {
                 Actual: {stock.cantidad} {getUnitLabel(stock.unidad)}. Con 0 el medicamento pasa a agotado.
               </p>
             </div>
-            <button type="button" onClick={onClose} className="btn btn-circle btn-ghost btn-sm" aria-label="Cerrar">
+            <button type="button" onClick={onClose} className="btn transition-all duration-200 active:scale-95 btn-circle btn-ghost btn-sm" aria-label="Cerrar">
               <XMarkIcon className="size-5" />
             </button>
           </div>
@@ -28,8 +28,8 @@ function StockAdjustModal({ stock, submitting, onClose, onSubmit }) {
           </label>
 
           <div className="flex justify-end gap-2">
-            <button type="button" onClick={onClose} className="btn btn-ghost" disabled={submitting}>Cancelar</button>
-            <button type="submit" className="btn border-0 bg-[#126f7b] text-white hover:bg-[#0b5d69]" disabled={submitting}>
+            <button type="button" onClick={onClose} className="btn transition-all duration-200 active:scale-95 btn-ghost" disabled={submitting}>Cancelar</button>
+            <button type="submit" className="btn transition-all duration-200 active:scale-95 border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg" disabled={submitting}>
               {submitting && <span className="loading loading-spinner loading-sm" />}
               {submitting ? 'Guardando...' : 'Guardar'}
             </button>

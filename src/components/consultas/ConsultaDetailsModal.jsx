@@ -55,7 +55,7 @@ function ConsultaDetailsModal({
               <p className="text-sm font-semibold text-[#15919a]">Detalle de consulta</p>
               <h2 id="consultation-details-title" className="mt-1 text-2xl font-bold text-[#19304a]">{consulta.motivo}</h2>
             </div>
-            <button type="button" onClick={onClose} className="btn btn-circle btn-ghost btn-sm" aria-label="Cerrar detalle">
+            <button type="button" onClick={onClose} className="btn transition-all duration-200 active:scale-95 btn-circle btn-ghost btn-sm" aria-label="Cerrar detalle">
               <XMarkIcon className="size-5" />
             </button>
           </div>
@@ -106,9 +106,9 @@ function ConsultaDetailsModal({
           <div className="mt-5 flex flex-wrap justify-center gap-2">
             {consulta.estado === 'PROGRAMADA' && (
               <>
-                <button type="button" onClick={onEdit} className="btn min-w-32 btn-outline" disabled={actionLoading}>Editar</button>
-                <button type="button" onClick={onCancel} className="btn min-w-32 btn-outline btn-error" disabled={actionLoading}>Cancelar consulta</button>
-                <button type="button" onClick={onConclude} className="btn min-w-32 border-0 bg-[#126f7b] text-white hover:bg-[#0b5d69]" disabled={actionLoading}>Concluir consulta</button>
+                <button type="button" onClick={onEdit} className="btn transition-all duration-200 active:scale-95 min-w-32 btn-outline" disabled={actionLoading}>Editar</button>
+                <button type="button" onClick={onCancel} className="btn transition-all duration-200 active:scale-95 min-w-32 btn-outline btn-error" disabled={actionLoading}>Cancelar consulta</button>
+                <button type="button" onClick={onConclude} className="btn transition-all duration-200 active:scale-95 min-w-32 border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg" disabled={actionLoading}>Concluir consulta</button>
               </>
             )}
           </div>

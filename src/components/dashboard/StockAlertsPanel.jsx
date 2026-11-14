@@ -21,7 +21,7 @@ function StockAlertsPanel({ alerts, loading }) {
             </h2>
             <p className="mt-1 text-sm text-slate-500">Medicamentos agotados, caducados, bajo el mínimo o por caducar.</p>
           </div>
-          <Link to="/stock" className="btn btn-ghost btn-sm text-[#126f7b]">Ver stock <ChevronRightIcon className="size-4" /></Link>
+          <Link to="/stock" className="btn transition-all duration-200 active:scale-95 btn-ghost btn-sm text-[#126f7b]">Ver stock <ChevronRightIcon className="size-4" /></Link>
         </div>
 
         {loading ? (

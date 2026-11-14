@@ -7,10 +7,10 @@ function SummaryCard({ icon, label, value, description, tone = 'teal' }) {
   };
 
   return (
-    <article className="card border border-slate-200 bg-white shadow-sm">
+    <article className="group card border border-slate-200 bg-white shadow-sm transition duration-300 starting:translate-y-2 starting:opacity-0 hover:-translate-y-0.5 hover:border-[#8dd5cd] hover:shadow-md">
       <div className="card-body gap-3 p-5">
         <div className="flex items-start justify-between">
-          <span className={`grid size-11 place-items-center rounded-2xl ${tones[tone]}`}>
+          <span className={`grid size-11 place-items-center rounded-2xl transition duration-300 group-hover:scale-110 group-hover:-rotate-3 ${tones[tone]}`}>
             {icon}
           </span>
           <span className="text-xs font-medium text-slate-400">Este mes</span>

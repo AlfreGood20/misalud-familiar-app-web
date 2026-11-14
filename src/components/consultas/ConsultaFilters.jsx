@@ -82,7 +82,7 @@ function ConsultaFilters({
             </select>
           </label>
           <div className="flex items-end lg:col-span-2 lg:justify-end">
-            <button type="button" onClick={onClear} className="btn btn-ghost btn-sm">Limpiar filtros</button>
+            <button type="button" onClick={onClear} className="btn transition-all duration-200 active:scale-95 btn-ghost btn-sm">Limpiar filtros</button>
           </div>
         </div>
       </div>

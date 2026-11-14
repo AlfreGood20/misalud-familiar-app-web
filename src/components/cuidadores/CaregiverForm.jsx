@@ -11,7 +11,7 @@ function CaregiverForm({ value, submitting, onChange, onSubmit, onCancel }) {
             <h2 className="text-lg font-bold text-[#19304a]">Nuevo cuidador</h2>
             <p className="text-sm text-slate-500">Dale acceso a una persona de confianza.</p>
           </div>
-          <button type="button" onClick={onCancel} className="btn btn-ghost btn-sm">Cancelar</button>
+          <button type="button" onClick={onCancel} className="btn transition-all duration-200 active:scale-95 btn-ghost btn-sm">Cancelar</button>
         </div>
         <div className="grid gap-x-4 sm:grid-cols-2">
           <Field label="Nombre" icon={<UserIcon />} {...field('nombre')} />
@@ -21,7 +21,7 @@ function CaregiverForm({ value, submitting, onChange, onSubmit, onCancel }) {
         </div>
         <Field label="Correo electrónico" type="email" {...field('correo')} />
         <Field label="Contraseña temporal" type="password" icon={<LockClosedIcon />} {...field('contrasena')} />
-        <button disabled={submitting} className="btn w-full border-0 bg-[#126f7b] text-white hover:bg-[#0b5d69]">
+        <button disabled={submitting} className="btn transition-all duration-200 active:scale-95 w-full border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg">
           {submitting && <span className="loading loading-spinner loading-sm" />}
           {submitting ? 'Creando...' : 'Crear cuidador'}
         </button>

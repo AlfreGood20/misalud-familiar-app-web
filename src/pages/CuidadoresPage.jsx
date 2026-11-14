@@ -124,7 +124,7 @@ function CuidadoresPage() {
   return (
     <main className="min-h-screen bg-[#f4f7fb] lg:pl-72">
       <DashboardSidebar familyName="Familia García" onLogout={() => navigate('/', { replace: true })} />
-      <div className="mx-auto max-w-7xl px-5 py-8 lg:px-8">
+      <div className="mx-auto max-w-7xl px-5 py-8 transition-all duration-500 starting:translate-y-3 starting:opacity-0 lg:px-8">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-[#15919a]">Configuración</p>
@@ -133,7 +133,7 @@ function CuidadoresPage() {
             </h1>
             <p className="mt-2 text-slate-500">Administra quién puede ayudarte a cuidar la salud familiar.</p>
           </div>
-          <button onClick={() => { setFormData(emptyCaregiver); setFormVisible(true); }} className="btn border-0 bg-[#126f7b] text-white hover:bg-[#0b5d69]">
+          <button onClick={() => { setFormData(emptyCaregiver); setFormVisible(true); }} className="btn transition-all duration-200 active:scale-95 border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg">
             <PlusIcon className="size-5" /> Agregar cuidador
           </button>
         </div>

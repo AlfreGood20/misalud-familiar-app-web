@@ -21,7 +21,7 @@ function StockCard({
   const discarded = stock.estado === 'DESECHADO';
 
   return (
-    <article className="card border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-[#8dd5cd] hover:shadow-md">
+    <article className="card border border-slate-200 bg-white shadow-sm transition duration-300 starting:translate-y-2 starting:opacity-0 hover:-translate-y-0.5 hover:border-[#8dd5cd] hover:shadow-md">
       <div className="card-body gap-0 p-5">
         <div className="flex items-start justify-between gap-3">
           <span className="grid size-11 place-items-center rounded-2xl bg-[#e5f7f4] text-[#15919a]">
@@ -69,17 +69,17 @@ function StockCard({
         )}
 
         <div className="card-actions mt-4 flex-wrap gap-2 border-t border-slate-100 pt-4">
-          <button type="button" onClick={() => onAdjust(stock)} className="btn btn-outline btn-sm flex-1" disabled={discarded}>
+          <button type="button" onClick={() => onAdjust(stock)} className="btn transition-all duration-200 active:scale-95 btn-outline btn-sm flex-1" disabled={discarded}>
             Ajustar cantidad
           </button>
-          <button type="button" onClick={() => onEdit(stock)} className="btn btn-ghost btn-sm" aria-label="Editar">
+          <button type="button" onClick={() => onEdit(stock)} className="btn transition-all duration-200 active:scale-95 btn-ghost btn-sm" aria-label="Editar">
             <PencilSquareIcon className="size-4" />
           </button>
-          <button type="button" onClick={() => onDiscard(stock)} className="btn btn-ghost btn-sm" aria-label="Desechar" disabled={discarded}>
+          <button type="button" onClick={() => onDiscard(stock)} className="btn transition-all duration-200 active:scale-95 btn-ghost btn-sm" aria-label="Desechar" disabled={discarded}>
             <ArchiveBoxXMarkIcon className="size-4" />
           </button>
           {isAdmin && (
-            <button type="button" onClick={() => onDelete(stock)} className="btn btn-error btn-sm text-white" aria-label="Eliminar">
+            <button type="button" onClick={() => onDelete(stock)} className="btn transition-all duration-200 active:scale-95 btn-error btn-sm text-white" aria-label="Eliminar">
               <TrashIcon className="size-4" />
             </button>
           )}

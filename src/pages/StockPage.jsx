@@ -233,7 +233,7 @@ function StockPage() {
   return (
     <main className="min-h-screen bg-[#f4f7fb] lg:pl-72">
       <DashboardSidebar familyName="Familia García" onLogout={handleLogout} />
-      <div className="mx-auto max-w-7xl px-5 py-8 lg:px-8">
+      <div className="mx-auto max-w-7xl px-5 py-8 transition-all duration-500 starting:translate-y-3 starting:opacity-0 lg:px-8">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-[#15919a]">Botiquín familiar</p>
@@ -247,7 +247,7 @@ function StockPage() {
               <ExclamationTriangleIcon className="size-5 text-[#15919a]" aria-hidden="true" />
               {pageInfo.totalElements} registrados
             </div>
-            <button type="button" onClick={openCreate} className="btn border-0 bg-[#126f7b] text-white hover:bg-[#0b5d69]">
+            <button type="button" onClick={openCreate} className="btn transition-all duration-200 active:scale-95 border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg">
               <PlusIcon className="size-5" /> Añadir al stock
             </button>
           </div>
@@ -285,8 +285,8 @@ function StockPage() {
               <div className="mt-6 flex items-center justify-between rounded-xl bg-white p-3 shadow-sm">
                 <p className="text-sm text-slate-500">Página {currentPage} de {Math.max(pageInfo.totalPages, 1)}</p>
                 <div className="join">
-                  <button type="button" className="btn btn-sm join-item" disabled={pageInfo.number === 0} onClick={() => setQueryFilters((current) => ({ ...current, page: current.page - 1 }))}><ChevronLeftIcon className="size-4" /></button>
-                  <button type="button" className="btn btn-sm join-item" disabled={currentPage >= pageInfo.totalPages} onClick={() => setQueryFilters((current) => ({ ...current, page: current.page + 1 }))}><ChevronRightIcon className="size-4" /></button>
+                  <button type="button" className="btn transition-all duration-200 active:scale-95 btn-sm join-item" disabled={pageInfo.number === 0} onClick={() => setQueryFilters((current) => ({ ...current, page: current.page - 1 }))}><ChevronLeftIcon className="size-4" /></button>
+                  <button type="button" className="btn transition-all duration-200 active:scale-95 btn-sm join-item" disabled={currentPage >= pageInfo.totalPages} onClick={() => setQueryFilters((current) => ({ ...current, page: current.page + 1 }))}><ChevronRightIcon className="size-4" /></button>
                 </div>
               </div>
             </>

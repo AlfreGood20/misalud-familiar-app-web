@@ -5,7 +5,7 @@ function CaregiverCard({ caregiver, onToggleStatus, onDelete }) {
   const lastName = caregiver.apellidoMaterno || caregiver.aepllidoMaterno;
 
   return (
-    <article className="card border border-slate-200 bg-white shadow-sm">
+    <article className="card border border-slate-200 bg-white shadow-sm transition duration-300 starting:translate-y-2 starting:opacity-0 hover:-translate-y-0.5 hover:border-[#8dd5cd] hover:shadow-md">
       <div className="card-body gap-4 p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -23,11 +23,11 @@ function CaregiverCard({ caregiver, onToggleStatus, onDelete }) {
           <p><span className="font-semibold">Rol:</span> {caregiver.rol}</p>
         </div>
         <div className="card-actions mt-1 flex-wrap">
-          <button type="button" onClick={() => onToggleStatus(caregiver)} className="btn btn-outline btn-sm flex-1">
+          <button type="button" onClick={() => onToggleStatus(caregiver)} className="btn transition-all duration-200 active:scale-95 btn-outline btn-sm flex-1">
             {isActive ? <NoSymbolIcon className="size-4" /> : <CheckCircleIcon className="size-4" />}
             {isActive ? 'Poner inactivo' : 'Activar'}
           </button>
-          <button type="button" onClick={() => onDelete(caregiver.id)} className="btn btn-error btn-sm text-white">
+          <button type="button" onClick={() => onDelete(caregiver.id)} className="btn transition-all duration-200 active:scale-95 btn-error btn-sm text-white">
             <TrashIcon className="size-4" /> Eliminar
           </button>
         </div>

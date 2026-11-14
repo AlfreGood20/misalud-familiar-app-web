@@ -18,7 +18,7 @@ function StockDetailsModal({ stock, loading, onClose }) {
               <h2 id="stock-detail-title" className="font-bold text-[#19304a]">Detalle del stock</h2>
             </div>
           </div>
-          <button type="button" onClick={onClose} className="btn btn-circle btn-ghost btn-sm" aria-label="Cerrar detalle"><XMarkIcon className="size-5" /></button>
+          <button type="button" onClick={onClose} className="btn transition-all duration-200 active:scale-95 btn-circle btn-ghost btn-sm" aria-label="Cerrar detalle"><XMarkIcon className="size-5" /></button>
         </div>
         {loading ? (
           <div className="flex min-h-72 items-center justify-center"><span className="loading loading-spinner loading-lg text-[#15919a]" /></div>

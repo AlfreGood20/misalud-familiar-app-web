@@ -285,7 +285,7 @@ function ConsultasPage() {
   return (
     <main className="min-h-screen bg-[#f4f7fb] lg:pl-72">
       <DashboardSidebar familyName="Familia García" onLogout={() => navigate('/', { replace: true })} />
-      <div className="mx-auto max-w-7xl px-5 py-8 lg:px-8">
+      <div className="mx-auto max-w-7xl px-5 py-8 transition-all duration-500 starting:translate-y-3 starting:opacity-0 lg:px-8">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-[#15919a]">Salud familiar</p>
@@ -294,7 +294,7 @@ function ConsultasPage() {
             </h1>
             <p className="mt-2 text-slate-500">Consulta y organiza las citas médicas de los integrantes de tu familia.</p>
           </div>
-          <button type="button" onClick={() => setFormOpen(true)} className="btn border-0 bg-[#126f7b] text-white hover:bg-[#0b5d69]">
+          <button type="button" onClick={() => setFormOpen(true)} className="btn transition-all duration-200 active:scale-95 border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg">
             <PlusIcon className="size-5" aria-hidden="true" /> Nueva consulta
           </button>
         </div>
@@ -328,8 +328,8 @@ function ConsultasPage() {
               <div className="mt-6 flex items-center justify-between rounded-xl bg-white p-3 shadow-sm">
                 <p className="text-sm text-slate-500">Página {pageInfo.number + 1} de {totalPages}</p>
                 <div className="join">
-                  <button type="button" className="btn btn-sm join-item" disabled={pageInfo.number === 0} onClick={() => setPage((current) => current - 1)}><ChevronLeftIcon className="size-4" /></button>
-                  <button type="button" className="btn btn-sm join-item" disabled={pageInfo.number + 1 >= totalPages} onClick={() => setPage((current) => current + 1)}><ChevronRightIcon className="size-4" /></button>
+                  <button type="button" className="btn transition-all duration-200 active:scale-95 btn-sm join-item" disabled={pageInfo.number === 0} onClick={() => setPage((current) => current - 1)}><ChevronLeftIcon className="size-4" /></button>
+                  <button type="button" className="btn transition-all duration-200 active:scale-95 btn-sm join-item" disabled={pageInfo.number + 1 >= totalPages} onClick={() => setPage((current) => current + 1)}><ChevronRightIcon className="size-4" /></button>
                 </div>
               </div>
             </>

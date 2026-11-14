@@ -4,7 +4,7 @@ function MedicationCard({ medication, onSelect }) {
   const medicationId = medication.id ?? medication.idMedicamento;
 
   return (
-    <button type="button" onClick={() => onSelect(medicationId)} className="card border border-slate-200 bg-white text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#8dd5cd] hover:shadow-md">
+    <button type="button" onClick={() => onSelect(medicationId)} className="card border border-slate-200 bg-white text-left shadow-sm transition duration-300 starting:translate-y-2 starting:opacity-0 hover:-translate-y-0.5 hover:border-[#8dd5cd] hover:shadow-md">
       <div className="card-body p-5">
         <div className="flex items-start justify-between gap-3">
           <span className="grid size-11 place-items-center rounded-2xl bg-[#e5f7f4] text-[#15919a]">

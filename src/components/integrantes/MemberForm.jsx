@@ -9,7 +9,7 @@ function MemberForm({ value, editing, submitting, onChange, onSubmit, onCancel }
         <div className="card-body p-5">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-bold text-[#19304a]">{editing ? 'Actualizar integrante' : 'Nuevo integrante'}</h2>
-          <button type="button" onClick={onCancel} className="btn btn-circle btn-ghost btn-sm"><XMarkIcon className="size-5" /></button>
+          <button type="button" onClick={onCancel} className="btn transition-all duration-200 active:scale-95 btn-circle btn-ghost btn-sm"><XMarkIcon className="size-5" /></button>
         </div>
         <div className="grid gap-x-4 sm:grid-cols-2">
           <Field label="Nombre" icon={<UserIcon />} required {...field('nombre')} />
@@ -22,7 +22,7 @@ function MemberForm({ value, editing, submitting, onChange, onSubmit, onCancel }
           <Select label="Tipo de sangre" required {...field('tipoSangre')} options={bloodTypes} />
         </div>
         <Select label="Parentesco" required {...field('parentesco')} options={relationships} />
-        <button disabled={submitting} className="btn w-full border-0 bg-[#126f7b] text-white hover:bg-[#0b5d69]">
+        <button disabled={submitting} className="btn transition-all duration-200 active:scale-95 w-full border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg">
           {submitting && <span className="loading loading-spinner loading-sm" />} {editing ? 'Guardar cambios' : 'Crear integrante'}
         </button>
         </div>

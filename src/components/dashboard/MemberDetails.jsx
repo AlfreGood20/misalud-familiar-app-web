@@ -12,7 +12,7 @@ function MemberDetails({ member, onClose }) {
   return (
     <dialog open className="modal modal-bottom sm:modal-middle">
       <div className="modal-box max-w-lg">
-        <button type="button" onClick={onClose} className="btn btn-circle btn-ghost btn-sm absolute right-3 top-3">
+        <button type="button" onClick={onClose} className="btn transition-all duration-200 active:scale-95 btn-circle btn-ghost btn-sm absolute right-3 top-3">
           <XMarkIcon className="size-5" aria-label="Cerrar detalles" />
         </button>
         <div className="mb-6 flex items-center gap-4">
@@ -31,7 +31,7 @@ function MemberDetails({ member, onClose }) {
           <Detail icon={<HeartIcon />} label="Estado" value={member.estado} />
         </div>
         <div className="modal-action">
-          <button type="button" className="btn btn-outline" onClick={onClose}>Cerrar</button>
+          <button type="button" className="btn transition-all duration-200 active:scale-95 btn-outline" onClick={onClose}>Cerrar</button>
         </div>
       </div>
       <div className="modal-backdrop" onClick={onClose} />

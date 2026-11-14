@@ -19,7 +19,7 @@ function MemberCard({ member, onOpen }) {
     <button
       type="button"
       onClick={() => onOpen(member.id)}
-      className="group card min-h-80 border border-slate-200 bg-white text-left shadow-sm transition hover:-translate-y-1 hover:border-[#8dd5cd] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#15919a] focus:ring-offset-2"
+      className="group card min-h-80 border border-slate-200 bg-white text-left shadow-sm transition duration-300 starting:translate-y-2 starting:opacity-0 hover:-translate-y-1 hover:border-[#8dd5cd] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#15919a] focus:ring-offset-2"
     >
       <div className="card-body gap-5 p-6">
         <div className="flex items-start gap-4">

@@ -21,7 +21,7 @@ function ConcludeConsultaModal({ open, submitting, onClose, onSubmit }) {
               <h2 id="conclude-consultation-title" className="mt-1 text-xl font-bold text-[#19304a]">Concluir consulta</h2>
               <p className="mt-1 text-xs text-slate-500">Ingresa los resultados y observaciones de la atención médica.</p>
             </div>
-            <button type="button" onClick={onClose} className="btn btn-circle btn-ghost btn-sm" aria-label="Cerrar formulario">
+            <button type="button" onClick={onClose} className="btn transition-all duration-200 active:scale-95 btn-circle btn-ghost btn-sm" aria-label="Cerrar formulario">
               <XMarkIcon className="size-5" />
             </button>
           </div>
@@ -44,8 +44,8 @@ function ConcludeConsultaModal({ open, submitting, onClose, onSubmit }) {
             </label>
           </div>
           <div className="mt-3 flex justify-end gap-2">
-            <button type="button" onClick={onClose} className="btn btn-ghost" disabled={submitting}>Cancelar</button>
-            <button type="submit" className="btn border-0 bg-[#126f7b] text-white hover:bg-[#0b5d69]" disabled={submitting}>
+            <button type="button" onClick={onClose} className="btn transition-all duration-200 active:scale-95 btn-ghost" disabled={submitting}>Cancelar</button>
+            <button type="submit" className="btn transition-all duration-200 active:scale-95 border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg" disabled={submitting}>
               {submitting && <span className="loading loading-spinner loading-sm" />}
               {submitting ? 'Guardando...' : 'Concluir consulta'}
             </button>

@@ -51,7 +51,7 @@ function MemberDetailModal({
             <p className="text-xs font-bold uppercase tracking-wide text-[#15919a]">Familia</p>
             <h2 id="member-detail-title" className="text-lg font-bold text-[#19304a]">Detalle del integrante</h2>
           </div>
-          <button type="button" onClick={onClose} className="btn btn-circle btn-ghost btn-sm" aria-label="Cerrar detalle">
+          <button type="button" onClick={onClose} className="btn transition-all duration-200 active:scale-95 btn-circle btn-ghost btn-sm" aria-label="Cerrar detalle">
             <XMarkIcon className="size-5" />
           </button>
         </div>
@@ -118,10 +118,10 @@ function MemberDetailModal({
             </div>
 
             <div className="flex shrink-0 gap-2 border-t border-slate-100 bg-white px-6 py-4">
-              <button type="button" onClick={() => onEdit(member)} className="btn btn-outline flex-1">
+              <button type="button" onClick={() => onEdit(member)} className="btn transition-all duration-200 active:scale-95 btn-outline flex-1">
                 <PencilSquareIcon className="size-4" /> Actualizar
               </button>
-              <button type="button" onClick={() => onDelete(member.id)} className="btn btn-error flex-1 text-white">
+              <button type="button" onClick={() => onDelete(member.id)} className="btn transition-all duration-200 active:scale-95 btn-error flex-1 text-white">
                 <TrashIcon className="size-4" /> Eliminar
               </button>
             </div>
