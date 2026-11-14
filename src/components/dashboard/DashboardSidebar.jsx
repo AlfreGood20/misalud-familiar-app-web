@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  ArchiveBoxIcon,
   ArrowRightOnRectangleIcon,
   BellAlertIcon,
   BeakerIcon,
@@ -20,6 +21,7 @@ const navigationItems = [
   { label: 'Cuidadores', icon: ShieldCheckIcon, to: '/cuidadores' },
   { label: 'Consultas médicas', icon: CalendarDaysIcon, to: '/consultas' },
   { label: 'Medicamentos', icon: CubeIcon, to: '/medicamentos' },
+  { label: 'Stock', icon: ArchiveBoxIcon, to: '/stock' },
   { label: 'Vacunas', icon: BeakerIcon },
   { label: 'Estudios de laboratorio', icon: ChartBarIcon },
   { label: 'Alertas', icon: BellAlertIcon, badge: 1 },
