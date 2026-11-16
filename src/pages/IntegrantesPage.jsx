@@ -184,7 +184,7 @@ function IntegrantesPage() {
     setFormVisible(true);
   };
 
-  return <main className="min-h-screen bg-[#f4f7fb] lg:pl-72">
+  return <main className="min-h-screen bg-[#dfe8f1] lg:pl-72">
     <DashboardSidebar familyName="Familia García" onLogout={() => navigate('/', { replace: true })} />
     <div className="mx-auto max-w-7xl px-5 py-8 transition-all duration-500 starting:translate-y-3 starting:opacity-0 lg:px-8">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4"><div><p className="text-sm font-semibold text-[#15919a]">Familia</p><h1 className="mt-1 flex items-center gap-2 text-3xl font-bold text-[#19304a]"><UserGroupIcon className="size-8 text-[#15919a]" /> Integrantes</h1><p className="mt-2 text-slate-500">Administra las personas que forman parte de tu familia.</p></div><button onClick={openCreate} className="btn transition-all duration-200 active:scale-95 border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg"><PlusIcon className="size-5" /> Agregar integrante</button></div>

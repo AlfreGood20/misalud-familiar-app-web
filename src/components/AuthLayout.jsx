@@ -1,15 +1,4 @@
-import {
-  CalendarDaysIcon,
-  CubeIcon,
-  ShieldCheckIcon,
-  UserGroupIcon,
-} from '@heroicons/react/24/outline';
-
-const features = [
-  { icon: UserGroupIcon, title: 'Seguimiento familiar', text: 'Expedientes de cada integrante en un solo lugar.' },
-  { icon: CalendarDaysIcon, title: 'Citas y consultas', text: 'Agenda y concluye consultas sin perder el historial.' },
-  { icon: CubeIcon, title: 'Botiquín bajo control', text: 'Existencias, mínimos y caducidades al día.' },
-];
+import { ShieldCheckIcon } from '@heroicons/react/24/outline';
 
 function Brand() {
   return (
@@ -41,20 +30,6 @@ function AuthLayout({ children, wide = false }) {
             Organiza citas, tratamientos y expedientes médicos en un solo lugar,
             con la tranquilidad de tener todo bajo control.
           </p>
-
-          <ul className="mt-9 space-y-3">
-            {features.map((feature) => (
-              <li key={feature.title} className="group flex items-center gap-4 rounded-2xl border border-white/15 bg-white/10 p-3.5 backdrop-blur-sm transition duration-300 hover:translate-x-1 hover:bg-white/15">
-                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-white/15 text-[#b8f0df] transition duration-300 group-hover:scale-110">
-                  <feature.icon className="size-6" aria-hidden="true" />
-                </span>
-                <span>
-                  <span className="block text-sm font-bold">{feature.title}</span>
-                  <span className="block text-xs text-[#d3f3ef]">{feature.text}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
         </div>
 
         <p className="relative z-10 flex items-center gap-1.5 text-xs text-[#b8e6e2]">

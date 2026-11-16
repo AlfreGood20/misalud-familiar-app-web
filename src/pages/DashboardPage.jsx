@@ -76,7 +76,7 @@ function DashboardPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f4f7fb] lg:pl-72">
+    <main className="min-h-screen bg-[#dfe8f1] lg:pl-72">
       <DashboardSidebar familyName={dashboard.familia.nombre} onLogout={handleLogout} />
       <div className="mx-auto max-w-7xl px-5 py-8 transition-all duration-500 starting:translate-y-3 starting:opacity-0 lg:px-8">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">

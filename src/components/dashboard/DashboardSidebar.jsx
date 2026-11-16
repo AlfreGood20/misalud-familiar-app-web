@@ -54,18 +54,18 @@ function DashboardSidebar({ familyName, onLogout }) {
   const role = user?.rol?.replaceAll('_', ' ') || 'Administrador';
 
   return (
-    <aside className="flex w-full shrink-0 flex-col border-b border-slate-200 bg-white lg:fixed lg:inset-y-0 lg:left-0 lg:w-72 lg:border-b-0 lg:border-r">
-      <div className="flex items-center gap-2.5 border-b border-slate-100 px-5 py-5 text-lg font-bold tracking-tight text-[#19304a] lg:px-7">
+    <aside className="flex w-full shrink-0 flex-col border-b border-[#0b2c3d] bg-gradient-to-b from-[#134660] to-[#0b2c3d] shadow-xl shadow-[#0b2c3d]/20 lg:fixed lg:inset-y-0 lg:left-0 lg:w-72 lg:border-b-0 lg:border-r lg:border-[#0b2c3d]">
+      <div className="flex items-center gap-2.5 border-b border-white/10 px-5 py-5 text-lg font-bold tracking-tight text-white lg:px-7">
         <img src="/logo-icon.svg" alt="MiSalud Familiar" className="size-9 rounded-xl" />
         MiSalud Familiar
       </div>
 
       <div className="hidden px-5 py-5 lg:block">
-        <div className="flex items-center gap-3 rounded-2xl bg-[#f1faf8] p-3">
+        <div className="flex items-center gap-3 rounded-2xl bg-white/10 p-3 ring-1 ring-white/10">
           <img src={avatarUrl} alt={`Avatar de ${fullName}`} className="size-10 rounded-xl" />
           <div className="min-w-0">
-            <p className="truncate text-sm font-bold text-[#19304a]">{role}</p>
-            <p className="truncate text-xs text-slate-500">{user?.correo || 'Sesión activa'}</p>
+            <p className="truncate text-sm font-bold text-white">{role}</p>
+            <p className="truncate text-xs text-slate-300">{user?.correo || 'Sesión activa'}</p>
           </div>
         </div>
       </div>
@@ -77,12 +77,12 @@ function DashboardSidebar({ familyName, onLogout }) {
             key={item.label}
             to={item.to}
             className={({ isActive }) => `group flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition duration-200 active:scale-95 lg:w-full ${
-              isActive ? 'bg-[#e5f7f4] text-[#126f7b]' : 'text-slate-500 hover:bg-slate-50 hover:text-[#126f7b]'
+              isActive ? 'bg-white/15 text-white shadow-sm ring-1 ring-white/10' : 'text-slate-300 hover:bg-white/10 hover:text-white'
             }`}
           >
             {({ isActive }) => (
               <>
-                <item.icon className={`size-5 ${isActive ? 'text-[#15919a]' : 'text-slate-400 group-hover:text-[#15919a]'}`} aria-hidden="true" />
+                <item.icon className={`size-5 ${isActive ? 'text-[#7fe0d4]' : 'text-slate-400 group-hover:text-[#7fe0d4]'}`} aria-hidden="true" />
                 <span className="whitespace-nowrap">{item.label}</span>
               </>
             )}
@@ -92,9 +92,9 @@ function DashboardSidebar({ familyName, onLogout }) {
             key={item.label}
             type="button"
             onClick={() => item.href && navigate(item.href)}
-            className="group flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-500 transition hover:bg-slate-50 hover:text-[#126f7b] lg:w-full"
+            className="group flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-300 transition duration-200 hover:bg-white/10 hover:text-white active:scale-95 lg:w-full"
           >
-            <item.icon className="size-5 text-slate-400 group-hover:text-[#15919a]" aria-hidden="true" />
+            <item.icon className="size-5 text-slate-400 group-hover:text-[#7fe0d4]" aria-hidden="true" />
             <span className="whitespace-nowrap">{item.label}</span>
             {item.label === 'Alertas' && alertCount > 0 && (
               <span className="badge badge-sm ml-auto bg-[#fff3df] text-[#bd7419]">{alertCount}</span>
@@ -103,19 +103,19 @@ function DashboardSidebar({ familyName, onLogout }) {
         ))}
 
         <p className="hidden px-3 pb-2 pt-7 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 lg:block">Configuración</p>
-        <button type="button" className="group flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-500 transition hover:bg-slate-50 hover:text-[#126f7b] lg:w-full">
-          <Cog6ToothIcon className="size-5 text-slate-400 group-hover:text-[#15919a]" aria-hidden="true" />
+        <button type="button" className="group flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-300 transition duration-200 hover:bg-white/10 hover:text-white active:scale-95 lg:w-full">
+          <Cog6ToothIcon className="size-5 text-slate-400 group-hover:text-[#7fe0d4]" aria-hidden="true" />
           Configuración
         </button>
       </nav>
 
-      <div className="hidden border-t border-slate-100 p-4 lg:block">
-        <button type="button" onClick={onLogout} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-500 transition hover:bg-red-50 hover:text-red-600 active:scale-95">
+      <div className="hidden border-t border-white/10 p-4 lg:block">
+        <button type="button" onClick={onLogout} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-300 transition hover:bg-red-500/15 hover:text-red-200 active:scale-95">
           <ArrowRightOnRectangleIcon className="size-5" aria-hidden="true" />
           Cerrar sesión
         </button>
       </div>
-      <button type="button" onClick={onLogout} className="flex items-center justify-center gap-2 border-t border-slate-100 px-4 py-3 text-sm font-semibold text-slate-500 hover:bg-red-50 hover:text-red-600 lg:hidden">
+      <button type="button" onClick={onLogout} className="flex items-center justify-center gap-2 border-t border-white/10 px-4 py-3 text-sm font-semibold text-slate-300 hover:bg-red-500/15 hover:text-red-200 lg:hidden">
         <ArrowRightOnRectangleIcon className="size-5" aria-hidden="true" />
         Cerrar sesión
       </button>
