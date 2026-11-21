@@ -9,6 +9,7 @@ import {
   Cog6ToothIcon,
   CubeIcon,
   HomeIcon,
+  IdentificationIcon,
   UserGroupIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
@@ -21,6 +22,7 @@ const navigationItems = [
   { label: 'Integrantes', icon: UserGroupIcon, to: '/integrantes' },
   { label: 'Cuidadores', icon: ShieldCheckIcon, to: '/cuidadores' },
   { label: 'Consultas médicas', icon: CalendarDaysIcon, to: '/consultas' },
+  { label: 'Médicos', icon: IdentificationIcon, to: '/medicos', adminOnly: true },
   { label: 'Medicamentos', icon: CubeIcon, to: '/medicamentos' },
   { label: 'Stock', icon: ArchiveBoxIcon, to: '/stock' },
   { label: 'Vacunas', icon: BeakerIcon },
@@ -50,6 +52,7 @@ function DashboardSidebar({ familyName, onLogout }) {
   const fullName = user
     ? [user.nombre, user.apellidoPaterno, user.apellidoMaterno].filter(Boolean).join(' ')
     : familyName || 'Usuario';
+  const visibleItems = navigationItems.filter((item) => !item.adminOnly || user?.rol === 'ADMIN');
   const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=d4f1eb&color=126f7b&bold=true`;
   const role = user?.rol?.replaceAll('_', ' ') || 'Administrador';
 
@@ -72,7 +75,7 @@ function DashboardSidebar({ familyName, onLogout }) {
 
       <nav className="scrollbar-none flex gap-1 overflow-x-auto px-4 py-3 lg:block lg:flex-1 lg:space-y-1 lg:overflow-y-auto lg:overflow-x-hidden lg:px-4" aria-label="Navegación principal">
         <p className="hidden px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 lg:block">Menú principal</p>
-        {navigationItems.map((item) => item.to ? (
+        {visibleItems.map((item) => item.to ? (
           <NavLink
             key={item.label}
             to={item.to}
