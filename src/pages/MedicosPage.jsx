@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import DashboardSidebar from '../components/dashboard/DashboardSidebar';
 import MedicoCard from '../components/medicos/MedicoCard';
 import MedicoFilters from '../components/medicos/MedicoFilters';
-import MedicoForm from '../components/medicos/MedicoForm';
+import MedicoFormModal from '../components/medicos/MedicoFormModal';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
 import { getCurrentUser } from '../services/authService';
 import { getEspecialidades } from '../services/especialidadService';
@@ -150,6 +150,10 @@ function MedicosPage() {
     return matchesText && matchesSpecialty;
   });
 
+  const coveredSpecialties = new Set(
+    medicos.flatMap((medico) => (medico.especialidades ?? []).map((specialty) => specialty.id)),
+  ).size;
+
   const deleteName = toDelete
     ? [toDelete.nombre, toDelete.apellidoPaterno, toDelete.apellidoMaterno].filter(Boolean).join(' ')
     : '';
@@ -185,19 +189,16 @@ function MedicosPage() {
           </div>
         ) : (
           <>
-            {formVisible && (
-              <div className="mb-6">
-                <MedicoForm
-                  value={formData}
-                  specialties={specialties}
-                  submitting={submitting}
-                  onChange={handleFormChange}
-                  onToggleSpecialty={toggleSpecialty}
-                  onSubmit={handleSubmit}
-                  onCancel={() => setFormVisible(false)}
-                />
+            <div className="mb-6 grid gap-4 sm:grid-cols-2">
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-xs font-medium text-slate-400">Médicos registrados</p>
+                <p className="mt-1 text-2xl font-bold text-[#19304a]">{medicos.length}</p>
               </div>
-            )}
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-xs font-medium text-slate-400">Especialidades cubiertas</p>
+                <p className="mt-1 text-2xl font-bold text-[#19304a]">{coveredSpecialties}</p>
+              </div>
+            </div>
 
             <MedicoFilters
               filters={filters}
@@ -230,6 +231,16 @@ function MedicosPage() {
           </>
         )}
       </div>
+      <MedicoFormModal
+        open={formVisible}
+        value={formData}
+        specialties={specialties}
+        submitting={submitting}
+        onChange={handleFormChange}
+        onToggleSpecialty={toggleSpecialty}
+        onSubmit={handleSubmit}
+        onCancel={() => setFormVisible(false)}
+      />
       <ConfirmDialog
         open={toDelete !== null}
         title="Eliminar médico"

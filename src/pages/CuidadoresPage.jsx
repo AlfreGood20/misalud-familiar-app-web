@@ -138,15 +138,13 @@ function CuidadoresPage() {
           </button>
         </div>
         {formVisible && (
-          <div className="mb-6">
-            <CaregiverForm
-              value={formData}
-              submitting={submitting}
-              onChange={(event) => setFormData((current) => ({ ...current, [event.target.name]: event.target.value }))}
-              onSubmit={handleSubmit}
-              onCancel={() => setFormVisible(false)}
-            />
-          </div>
+          <CaregiverForm
+            value={formData}
+            submitting={submitting}
+            onChange={(event) => setFormData((current) => ({ ...current, [event.target.name]: event.target.value }))}
+            onSubmit={handleSubmit}
+            onCancel={() => setFormVisible(false)}
+          />
         )}
         {loading ? (
           <div className="flex justify-center py-16"><span className="loading loading-spinner loading-lg text-[#15919a]" /></div>

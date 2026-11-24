@@ -1,44 +1,100 @@
-import { LockClosedIcon, PhoneIcon, UserIcon } from '@heroicons/react/24/outline';
+import { useState } from 'react';
+import {
+  ArrowPathIcon, AtSymbolIcon, EyeIcon, EyeSlashIcon, LockClosedIcon, PhoneIcon, ShieldCheckIcon, UserIcon, XMarkIcon,
+} from '@heroicons/react/24/outline';
 
-function CaregiverForm({ value, submitting, onChange, onSubmit, onCancel }) {
-  const field = (name) => ({ name, value: value[name], onChange, required: true });
+const PASSWORD_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
 
+function generatePassword(length = 12) {
+  const values = new Uint32Array(length);
+  crypto.getRandomValues(values);
+  return Array.from(values, (number) => PASSWORD_CHARS[number % PASSWORD_CHARS.length]).join('');
+}
+
+function Field({ label, icon, hint, optional, children, ...props }) {
   return (
-    <form onSubmit={onSubmit} className="card border border-slate-200 bg-white shadow-sm">
-      <div className="card-body p-5">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-bold text-[#19304a]">Nuevo cuidador</h2>
-            <p className="text-sm text-slate-500">Dale acceso a una persona de confianza.</p>
-          </div>
-          <button type="button" onClick={onCancel} className="btn transition-all duration-200 active:scale-95 btn-ghost btn-sm">Cancelar</button>
-        </div>
-        <div className="grid gap-x-4 sm:grid-cols-2">
-          <Field label="Nombre" icon={<UserIcon />} {...field('nombre')} />
-          <Field label="Apellido paterno" {...field('apellidoPaterno')} />
-          <Field label="Apellido materno" {...field('apellidoMaterno')} />
-          <Field label="Teléfono" type="tel" icon={<PhoneIcon />} {...field('telefono')} />
-        </div>
-        <Field label="Correo electrónico" type="email" {...field('correo')} />
-        <Field label="Contraseña temporal" type="password" icon={<LockClosedIcon />} {...field('contrasena')} />
-        <button disabled={submitting} className="btn transition-all duration-200 active:scale-95 w-full border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg">
-          {submitting && <span className="loading loading-spinner loading-sm" />}
-          {submitting ? 'Creando...' : 'Crear cuidador'}
-        </button>
-      </div>
-    </form>
+    <label className="label mb-3 block p-0">
+      <span className="label-text mb-1.5 block font-bold text-[#29425d]">
+        {label} {optional && <span className="font-normal text-slate-400">(opcional)</span>}
+      </span>
+      <span className="input input-bordered flex items-center gap-2 bg-white transition duration-200 hover:border-[#8dd5cd] focus-within:shadow-md focus-within:shadow-[#15919a]/10 focus-within:outline-[#15919a]">
+        {icon && <span className="text-[#15919a] [&>svg]:size-5">{icon}</span>}
+        <input className="grow" {...props} />
+        {children}
+      </span>
+      {hint && <span className="mt-1 block text-xs text-slate-400">{hint}</span>}
+    </label>
   );
 }
 
-function Field({ label, icon, ...props }) {
+function CaregiverForm({ value, submitting, onChange, onSubmit, onCancel }) {
+  const [showPassword, setShowPassword] = useState(false);
+  const field = (name) => ({ name, value: value[name], onChange });
+  const setValue = (name, newValue) => onChange({ target: { name, value: newValue } });
+
+  const handlePhone = (event) => setValue('telefono', event.target.value.replace(/\D/g, '').slice(0, 20));
+
+  const handleGenerate = () => {
+    setValue('contrasena', generatePassword());
+    setShowPassword(true);
+  };
+
   return (
-    <label className="label mb-3 block p-0">
-      <span className="label-text mb-1.5 block font-bold text-[#29425d]">{label}</span>
-      <span className="input input-bordered flex items-center gap-2 bg-white focus-within:outline-[#15919a]">
-        {icon && <span className="text-[#15919a] [&>svg]:size-5">{icon}</span>}
-        <input className="grow" {...props} />
-      </span>
-    </label>
+    <div className="modal modal-open" role="dialog" aria-modal="true" aria-labelledby="caregiver-form-title">
+      <form onSubmit={onSubmit} className="modal-box max-h-[92vh] max-w-xl overflow-y-auto border border-slate-200 bg-white p-0 shadow-sm">
+        <div className="card-body p-5">
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="grid size-11 place-items-center rounded-2xl bg-[#e5f7f4] text-[#15919a]"><ShieldCheckIcon className="size-6" /></span>
+              <div>
+                <p className="text-sm font-semibold text-[#15919a]">Configuración</p>
+                <h2 id="caregiver-form-title" className="text-xl font-bold text-[#19304a]">Nuevo cuidador</h2>
+                <p className="text-xs text-slate-500">Dale acceso a una persona de confianza.</p>
+              </div>
+            </div>
+            <button type="button" onClick={onCancel} className="btn btn-circle btn-ghost btn-sm transition-all duration-200 active:scale-95" aria-label="Cerrar formulario"><XMarkIcon className="size-5" /></button>
+          </div>
+
+          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-400">Datos personales</p>
+          <div className="grid gap-x-4 sm:grid-cols-2">
+            <Field label="Nombre" icon={<UserIcon />} required autoFocus {...field('nombre')} />
+            <Field label="Apellido paterno" {...field('apellidoPaterno')} />
+            <Field label="Apellido materno" optional {...field('apellidoMaterno')} />
+            <Field label="Teléfono" type="tel" icon={<PhoneIcon />} inputMode="numeric" maxLength="20" optional name="telefono" value={value.telefono} onChange={handlePhone} />
+          </div>
+
+          <p className="mb-2 mt-1 text-xs font-bold uppercase tracking-wider text-slate-400">Acceso al sistema</p>
+          <Field label="Correo electrónico" type="email" icon={<AtSymbolIcon />} required autoComplete="off" {...field('correo')} />
+          <Field
+            label="Contraseña temporal"
+            type={showPassword ? 'text' : 'password'}
+            icon={<LockClosedIcon />}
+            minLength="8"
+            maxLength="72"
+            required
+            autoComplete="new-password"
+            hint="De 8 a 72 caracteres. Compártela con el cuidador de forma segura."
+            {...field('contrasena')}
+          >
+            <button type="button" onClick={() => setShowPassword((visible) => !visible)} className="rounded-md p-1 text-[#126f7b] transition hover:bg-[#eaf8f5] active:scale-95" aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'} aria-pressed={showPassword}>
+              {showPassword ? <EyeSlashIcon className="size-4" /> : <EyeIcon className="size-4" />}
+            </button>
+          </Field>
+          <button type="button" onClick={handleGenerate} className="btn btn-outline btn-sm mb-4 transition-all duration-200 active:scale-95">
+            <ArrowPathIcon className="size-4" /> Generar contraseña segura
+          </button>
+
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={onCancel} className="btn btn-ghost transition-all duration-200 active:scale-95" disabled={submitting}>Cancelar</button>
+            <button type="submit" disabled={submitting} className="btn border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg active:scale-95">
+              {submitting && <span className="loading loading-spinner loading-sm" />}
+              {submitting ? 'Creando...' : 'Crear cuidador'}
+            </button>
+          </div>
+        </div>
+      </form>
+      <button type="button" className="modal-backdrop" aria-label="Cerrar formulario" onClick={onCancel} />
+    </div>
   );
 }
 
