@@ -54,8 +54,8 @@ function VacunacionPage() {
             <p className="mt-2 text-slate-500">Consulta las cartillas de vacunación de los integrantes de tu familia.</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button type="button" onClick={() => setGuideOpen(true)} className="btn btn-outline transition-all duration-200 active:scale-95 hover:-translate-y-0.5">
-              <BookOpenIcon className="size-5 text-[#15919a]" aria-hidden="true" /> Guía oficial
+            <button type="button" onClick={() => setGuideOpen(true)} className="btn border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg active:scale-95">
+              <BookOpenIcon className="size-5" aria-hidden="true" /> Guía oficial
             </button>
           </div>
         </div>

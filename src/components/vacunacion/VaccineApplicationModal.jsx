@@ -1,4 +1,4 @@
-import { CalendarDaysIcon, MapPinIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { BeakerIcon, CalendarDaysIcon, MapPinIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 function getToday() {
   const date = new Date();
@@ -21,15 +21,18 @@ function VaccineApplicationModal({
 
   return (
     <div className="modal modal-open" role="dialog" aria-modal="true" aria-labelledby="vaccine-application-title">
-      <form onSubmit={onSubmit} className="modal-box max-w-md border border-slate-200 bg-white p-0 shadow-2xl">
+      <form onSubmit={onSubmit} className="modal-box max-w-md border border-slate-200 bg-white p-0 shadow-2xl transition duration-300 starting:translate-y-3 starting:opacity-0">
         <div className="p-5 sm:p-6">
           <div className="mb-5 flex items-start justify-between gap-4">
-            <div>
+            <div className="flex items-start gap-3">
+              <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-[#e5f7f4] text-[#126f7b] ring-1 ring-[#15919a]/10"><BeakerIcon className="size-6" aria-hidden="true" /></span>
+              <div>
               <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#15919a]">{editing ? 'Actualización de vacunación' : 'Registro de vacunación'}</p>
               <h2 id="vaccine-application-title" className="mt-1 text-xl font-bold text-[#19304a]">{editing ? 'Editar aplicación' : 'Registrar aplicación'}</h2>
               <p className="mt-1 text-sm text-slate-500">{memberName}</p>
+              </div>
             </div>
-            <button type="button" onClick={onClose} className="btn btn-circle btn-ghost btn-sm" aria-label="Cerrar registro" disabled={submitting}>
+            <button type="button" onClick={onClose} className="btn btn-circle btn-ghost btn-sm transition-all duration-200 active:scale-95" aria-label="Cerrar registro" disabled={submitting}>
               <XMarkIcon className="size-5" />
             </button>
           </div>
@@ -67,8 +70,8 @@ function VaccineApplicationModal({
           </label>
 
           <div className="flex justify-end gap-2">
-            <button type="button" onClick={onClose} className="btn btn-ghost" disabled={submitting}>Cancelar</button>
-            <button type="submit" className="btn border-0 bg-[#126f7b] text-white hover:bg-[#0b5d69]" disabled={submitting}>
+            <button type="button" onClick={onClose} className="btn btn-ghost transition-all duration-200 active:scale-95" disabled={submitting}>Cancelar</button>
+            <button type="submit" className="btn border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg active:scale-95" disabled={submitting}>
               {submitting && <span className="loading loading-spinner loading-sm" />}
               {submitting ? 'Guardando...' : editing ? 'Guardar cambios' : 'Registrar aplicación'}
             </button>

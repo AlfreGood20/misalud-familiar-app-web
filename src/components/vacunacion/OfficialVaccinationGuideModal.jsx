@@ -86,7 +86,7 @@ function OfficialVaccinationGuideModal({ open, onClose }) {
 
   return (
     <div className="modal modal-open" role="dialog" aria-modal="true" aria-labelledby="vaccination-guide-title">
-      <div className="modal-box h-[82vh] max-h-[82vh] w-[620px] max-w-[92vw] overflow-hidden bg-[#f4f7fb] p-0 shadow-2xl">
+      <div className="modal-box transition duration-300 starting:translate-y-3 starting:opacity-0 h-[82vh] max-h-[82vh] w-[620px] max-w-[92vw] overflow-hidden bg-[#f4f7fb] p-0 shadow-2xl">
         <div className="flex h-full flex-col overflow-hidden p-3">
           <div className="mb-2 flex shrink-0 items-start justify-between gap-4 rounded-xl border border-slate-200 bg-white px-4 py-2 shadow-sm">
             <div className="flex items-center gap-3">
@@ -98,12 +98,12 @@ function OfficialVaccinationGuideModal({ open, onClose }) {
                 <h2 id="vaccination-guide-title" className="text-xl font-black text-[#19304a]">Esquema de vacunación</h2>
               </div>
             </div>
-            <button type="button" onClick={onClose} className="btn btn-circle btn-ghost btn-sm" aria-label="Cerrar guía">
+            <button type="button" onClick={onClose} className="btn btn-circle btn-ghost btn-sm transition-all duration-200 active:scale-95" aria-label="Cerrar guía">
               <XMarkIcon className="size-5" />
             </button>
           </div>
 
-          <label className="input input-bordered mb-2 flex w-full shrink-0 items-center gap-2 bg-white">
+          <label className="input input-bordered mb-2 flex w-full shrink-0 items-center gap-2 bg-white transition duration-200 hover:border-[#8dd5cd] focus-within:outline-[#15919a]">
             <MagnifyingGlassIcon className="size-5 text-[#15919a]" aria-hidden="true" />
             <input value={search} onChange={(event) => setSearch(event.target.value)} className="grow" placeholder="Buscar vacuna" />
           </label>
@@ -122,12 +122,12 @@ function OfficialVaccinationGuideModal({ open, onClose }) {
             ) : (
               <table className="w-full table-fixed border-collapse text-xs sm:text-sm">
                 <thead className="sticky top-0 z-10">
-                  <tr className="bg-[#9edb75] text-[#19304a]">
-                    <th className="w-[17%] border border-[#19304a] px-2 py-3 text-center">Vacuna</th>
-                    <th className="w-[25%] border border-[#19304a] px-2 py-3 text-center">Enfermedad que previene</th>
-                    <th className="w-[13%] border border-[#19304a] px-2 py-3 text-center">Dosis</th>
-                    <th className="w-[17%] border border-[#19304a] px-2 py-3 text-center">Edad / frecuencia</th>
-                    <th className="w-[28%] border border-[#19304a] px-2 py-3 text-center">Contraindicaciones</th>
+                  <tr className="bg-[#d4f1eb] text-[#126f7b]">
+                    <th className="w-[17%] border border-slate-300 px-2 py-3 text-center">Vacuna</th>
+                    <th className="w-[25%] border border-slate-300 px-2 py-3 text-center">Enfermedad que previene</th>
+                    <th className="w-[13%] border border-slate-300 px-2 py-3 text-center">Dosis</th>
+                    <th className="w-[17%] border border-slate-300 px-2 py-3 text-center">Edad / frecuencia</th>
+                    <th className="w-[28%] border border-slate-300 px-2 py-3 text-center">Contraindicaciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -186,8 +186,8 @@ function OfficialVaccinationGuideModal({ open, onClose }) {
               {pageInfo.totalElements} vacunas · Página {pageInfo.number + 1} de {totalPages}
             </p>
             <div className="join">
-              <button type="button" className="btn btn-sm join-item" disabled={page === 0} onClick={() => setPage((current) => current - 1)}><ChevronLeftIcon className="size-4" /></button>
-              <button type="button" className="btn btn-sm join-item" disabled={page + 1 >= totalPages} onClick={() => setPage((current) => current + 1)}><ChevronRightIcon className="size-4" /></button>
+              <button type="button" className="btn btn-sm join-item transition-all duration-200 active:scale-95" disabled={page === 0} onClick={() => setPage((current) => current - 1)}><ChevronLeftIcon className="size-4" /></button>
+              <button type="button" className="btn btn-sm join-item transition-all duration-200 active:scale-95" disabled={page + 1 >= totalPages} onClick={() => setPage((current) => current + 1)}><ChevronRightIcon className="size-4" /></button>
             </div>
           </div>
         </div>
