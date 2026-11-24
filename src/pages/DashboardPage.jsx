@@ -14,6 +14,8 @@ import SummaryCard from '../components/dashboard/SummaryCard';
 import DashboardSidebar from '../components/dashboard/DashboardSidebar';
 import StockAlertsPanel from '../components/dashboard/StockAlertsPanel';
 import useStockAlerts from '../components/stock/useStockAlerts';
+import VaccineAlertsPanel from '../components/dashboard/VaccineAlertsPanel';
+import useVaccineAlerts from '../components/vacunacion/useVaccineAlerts';
 
 const dashboardExample = {
   familia: { nombre: 'Familia García' },
@@ -64,6 +66,7 @@ function DashboardPage() {
   const navigate = useNavigate();
   const [selectedMember, setSelectedMember] = useState(null);
   const { alerts: stockAlerts, loading: stockAlertsLoading } = useStockAlerts();
+  const { alerts: vaccineAlerts, loading: vaccineAlertsLoading } = useVaccineAlerts();
 
   // API DEL DASHBOARD:
   // Sustituye dashboardExample por:
@@ -96,11 +99,12 @@ function DashboardPage() {
           <SummaryCard icon={<HeartIcon className="size-6" />} label="Integrantes" value={dashboard.resumen.integrantes} description="Personas en tu familia" />
           <SummaryCard icon={<CalendarDaysIcon className="size-6" />} label="Consultas" value={dashboard.resumen.consultas} description="Próximas o pendientes" tone="blue" />
           <SummaryCard icon={<CubeIcon className="size-6" />} label="Medicamentos" value={dashboard.resumen.medicamentos} description="Registrados actualmente" tone="orange" />
-          <SummaryCard icon={<BellAlertIcon className="size-6" />} label="Alertas" value={stockAlertsLoading ? '…' : stockAlerts.length} description="Requieren tu atención" tone="red" />
+          <SummaryCard icon={<BellAlertIcon className="size-6" />} label="Alertas" value={stockAlertsLoading || vaccineAlertsLoading ? '…' : stockAlerts.length + vaccineAlerts.length} description="Requieren tu atención" tone="red" />
         </section>
 
-        <div className="mt-10">
+        <div className="mt-10 grid gap-5 lg:grid-cols-2">
           <StockAlertsPanel alerts={stockAlerts} loading={stockAlertsLoading} />
+          <VaccineAlertsPanel alerts={vaccineAlerts} loading={vaccineAlertsLoading} />
         </div>
 
         <section className="mt-10">

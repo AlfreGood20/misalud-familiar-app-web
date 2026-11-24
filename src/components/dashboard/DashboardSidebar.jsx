@@ -16,6 +16,7 @@ import {
 import { NavLink, useNavigate } from 'react-router-dom';
 import { getCurrentUser } from '../../services/authService';
 import useStockAlerts from '../stock/useStockAlerts';
+import useVaccineAlerts from '../vacunacion/useVaccineAlerts';
 
 const navigationItems = [
   { label: 'Resumen', icon: HomeIcon, to: '/dashboard' },
@@ -34,7 +35,8 @@ function DashboardSidebar({ familyName, onLogout }) {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const { alerts } = useStockAlerts();
-  const alertCount = alerts.length;
+  const { alerts: vaccineAlerts } = useVaccineAlerts();
+  const alertCount = alerts.length + vaccineAlerts.length;
 
   useEffect(() => {
     let cancelled = false;
