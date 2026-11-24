@@ -25,7 +25,7 @@ const navigationItems = [
   { label: 'Médicos', icon: IdentificationIcon, to: '/medicos', adminOnly: true },
   { label: 'Medicamentos', icon: CubeIcon, to: '/medicamentos' },
   { label: 'Stock', icon: ArchiveBoxIcon, to: '/stock' },
-  { label: 'Vacunas', icon: BeakerIcon },
+  { label: 'Vacunación', icon: BeakerIcon, to: '/vacunacion' },
   { label: 'Estudios de laboratorio', icon: ChartBarIcon },
   { label: 'Alertas', icon: BellAlertIcon, href: '/stock' },
 ];
