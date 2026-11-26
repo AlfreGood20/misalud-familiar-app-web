@@ -12,7 +12,6 @@ import {
   DocumentTextIcon,
   IdentificationIcon,
   UserGroupIcon,
-  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import { NavLink } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -25,7 +24,6 @@ import {
 const navigationItems = [
   { label: 'Resumen', icon: HomeIcon, to: '/dashboard' },
   { label: 'Integrantes', icon: UserGroupIcon, to: '/integrantes' },
-  { label: 'Cuidadores', icon: ShieldCheckIcon, to: '/cuidadores' },
   { label: 'Consultas médicas', icon: CalendarDaysIcon, to: '/consultas' },
   { label: 'Médicos', icon: IdentificationIcon, to: '/medicos'},
   { label: 'Medicamentos', icon: CubeIcon, to: '/medicamentos' },
@@ -121,10 +119,19 @@ function DashboardSidebar({ familyName, onLogout }) {
         ))}
 
         <p className="hidden px-3 pb-2 pt-7 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 lg:block">Configuración</p>
-        <button type="button" className="group flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-300 transition duration-200 hover:bg-white/10 hover:text-white active:scale-95 lg:w-full">
-          <Cog6ToothIcon className="size-5 text-slate-400 group-hover:text-[#7fe0d4]" aria-hidden="true" />
-          Configuración
-        </button>
+        <NavLink
+          to="/configuracion"
+          className={({ isActive }) => `group flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition duration-200 active:scale-95 lg:w-full ${
+            isActive ? 'bg-white/15 text-white shadow-sm ring-1 ring-white/10' : 'text-slate-300 hover:bg-white/10 hover:text-white'
+          }`}
+        >
+          {({ isActive }) => (
+            <>
+              <Cog6ToothIcon className={`size-5 ${isActive ? 'text-[#7fe0d4]' : 'text-slate-400 group-hover:text-[#7fe0d4]'}`} aria-hidden="true" />
+              Configuración
+            </>
+          )}
+        </NavLink>
       </nav>
 
       <div className="hidden border-t border-white/10 p-4 lg:block">

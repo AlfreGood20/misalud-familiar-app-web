@@ -59,7 +59,7 @@ function Field({ label, icon, hint, optional, labelAction, children, ...props })
   );
 }
 
-function CaregiverForm({ value, submitting, onChange, onSubmit, onCancel }) {
+function CaregiverForm({ value, editing = false, submitting, onChange, onSubmit, onCancel }) {
   const [showPassword, setShowPassword] = useState(false);
   const field = (name) => ({ name, value: value[name], onChange });
   const setValue = (name, newValue) => onChange({ target: { name, value: newValue } });
@@ -95,8 +95,8 @@ function CaregiverForm({ value, submitting, onChange, onSubmit, onCancel }) {
               <span className="grid size-11 place-items-center rounded-2xl bg-[#e5f7f4] text-[#15919a]"><ShieldCheckIcon className="size-6" /></span>
               <div>
                 <p className="text-sm font-semibold text-[#15919a]">Configuración</p>
-                <h2 id="caregiver-form-title" className="text-xl font-bold text-[#19304a]">Nuevo cuidador</h2>
-                <p className="text-xs text-slate-500">Dale acceso a una persona de confianza.</p>
+                <h2 id="caregiver-form-title" className="text-xl font-bold text-[#19304a]">{editing ? 'Actualizar cuidador' : 'Nuevo cuidador'}</h2>
+                <p className="text-xs text-slate-500">{editing ? 'Actualiza los datos del cuidador.' : 'Dale acceso a una persona de confianza.'}</p>
               </div>
             </div>
             <button type="button" onClick={onCancel} className="btn btn-circle btn-ghost btn-sm transition-all duration-200 active:scale-95" aria-label="Cerrar formulario"><XMarkIcon className="size-5" /></button>
@@ -115,38 +115,42 @@ function CaregiverForm({ value, submitting, onChange, onSubmit, onCancel }) {
             <div className="sm:col-span-2">
               <Field label="Correo electrónico" type="email" icon={<AtSymbolIcon />} required autoComplete="off" {...field('correo')} />
             </div>
-            <div className="sm:col-span-2">
-              <Field
-                label="Contraseña temporal"
-                type={showPassword ? 'text' : 'password'}
-                icon={<LockClosedIcon />}
-                minLength="8"
-                maxLength="72"
-                required
-                autoComplete="new-password"
-                hint="De 8 a 72 caracteres. Compártela con el cuidador de forma segura."
-                labelAction={(
-                  <button type="button" onClick={handleCopyPassword} disabled={!value.contrasena || submitting} className="btn btn-ghost btn-xs min-h-0 px-1 text-[#126f7b] transition-all duration-200 active:scale-95" aria-label="Copiar contraseña temporal">
-                    <ClipboardDocumentIcon className="size-4" aria-hidden="true" /> Copiar
+            {!editing && (
+              <div className="sm:col-span-2">
+                <Field
+                  label="Contraseña temporal"
+                  type={showPassword ? 'text' : 'password'}
+                  icon={<LockClosedIcon />}
+                  minLength="8"
+                  maxLength="72"
+                  required
+                  autoComplete="new-password"
+                  hint="De 8 a 72 caracteres. Compártela con el cuidador de forma segura."
+                  labelAction={(
+                    <button type="button" onClick={handleCopyPassword} disabled={!value.contrasena || submitting} className="btn btn-ghost btn-xs min-h-0 px-1 text-[#126f7b] transition-all duration-200 active:scale-95" aria-label="Copiar contraseña temporal">
+                      <ClipboardDocumentIcon className="size-4" aria-hidden="true" /> Copiar
+                    </button>
+                  )}
+                  {...field('contrasena')}
+                >
+                  <button type="button" onClick={() => setShowPassword((visible) => !visible)} className="rounded-md p-1 text-[#126f7b] transition hover:bg-[#eaf8f5] active:scale-95" aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'} aria-pressed={showPassword}>
+                    {showPassword ? <EyeSlashIcon className="size-4" /> : <EyeIcon className="size-4" />}
                   </button>
-                )}
-                {...field('contrasena')}
-              >
-                <button type="button" onClick={() => setShowPassword((visible) => !visible)} className="rounded-md p-1 text-[#126f7b] transition hover:bg-[#eaf8f5] active:scale-95" aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'} aria-pressed={showPassword}>
-                  {showPassword ? <EyeSlashIcon className="size-4" /> : <EyeIcon className="size-4" />}
-                </button>
-              </Field>
-            </div>
+                </Field>
+              </div>
+            )}
           </div>
-          <button type="button" onClick={handleGenerate} className="btn btn-outline btn-sm mb-4 transition-all duration-200 active:scale-95">
-            <ArrowPathIcon className="size-4" /> Generar contraseña segura
-          </button>
+          {!editing && (
+            <button type="button" onClick={handleGenerate} className="btn btn-outline btn-sm mb-4 transition-all duration-200 active:scale-95">
+              <ArrowPathIcon className="size-4" /> Generar contraseña segura
+            </button>
+          )}
 
           <div className="flex justify-end gap-2">
             <button type="button" onClick={onCancel} className="btn btn-ghost transition-all duration-200 active:scale-95" disabled={submitting}>Cancelar</button>
             <button type="submit" disabled={submitting} className="btn border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg active:scale-95">
               {submitting && <span className="loading loading-spinner loading-sm" />}
-              {submitting ? 'Creando...' : 'Crear cuidador'}
+              {submitting ? (editing ? 'Guardando...' : 'Creando...') : (editing ? 'Guardar cambios' : 'Crear cuidador')}
             </button>
           </div>
         </div>

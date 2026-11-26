@@ -66,10 +66,6 @@ function LoginPage() {
           </button>
         </label>
 
-        <label className="label mt-2 cursor-pointer justify-start gap-2 px-0">
-          <input type="checkbox" className="checkbox checkbox-sm [--chkbg:#15919a] [--chkfg:white]" />
-          <span className="label-text text-xs text-slate-500">Recordarme en este dispositivo</span>
-        </label>
         <button className="btn group mt-3 h-12 w-full border-0 bg-[#126f7b] text-white shadow-lg shadow-[#126f7b]/25 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-xl active:translate-y-0 active:scale-[0.98] disabled:bg-[#126f7b] disabled:text-white disabled:opacity-70" type="submit" disabled={submitting}>
           {submitting ? <span className="loading loading-spinner loading-sm" /> : null}
           {submitting ? 'Entrando...' : 'Entrar a mi cuenta'}

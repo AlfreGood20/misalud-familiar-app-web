@@ -5,7 +5,7 @@ async function parseResponse(response, defaultMessage) {
     let message = defaultMessage;
     try {
       const body = await response.json();
-      message = body.message || body.error || message;
+      message = body.menssaje || body.message || body.error || message;
     } catch {
       // Algunas respuestas de error no contienen JSON.
     }
@@ -22,6 +22,14 @@ export async function getCuidadores() {
   );
 }
 
+export async function getCuidadorById(idCuidador) {
+  // CONSUMO DE API: GET /usuarios/cuidadores/{idCuidador}.
+  return parseResponse(
+    await fetch(`${API_URL}/usuarios/cuidadores/${idCuidador}`, { credentials: 'include' }),
+    'No se pudieron cargar los detalles del cuidador',
+  );
+}
+
 export async function createCuidador(data) {
   // CONSUMO DE API: POST /usuarios/cuidadores.
   return parseResponse(
@@ -32,6 +40,25 @@ export async function createCuidador(data) {
       body: JSON.stringify(data),
     }),
     'No se pudo crear el cuidador',
+  );
+}
+
+export async function updateCuidador(idCuidador, data) {
+  // CONSUMO DE API: PUT /usuarios/cuidadores/{idCuidador}.
+  return parseResponse(
+    await fetch(`${API_URL}/usuarios/cuidadores/${idCuidador}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        nombre: data.nombre,
+        apellidoPaterno: data.apellidoPaterno,
+        apellidoMaterno: data.apellidoMaterno,
+        correo: data.correo,
+        telefono: data.telefono,
+      }),
+    }),
+    'No se pudo actualizar el cuidador',
   );
 }
 

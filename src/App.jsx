@@ -14,6 +14,8 @@ import EstudiosPage from './pages/EstudiosPage';
 import VacunacionPage from './pages/VacunacionPage';
 import CartillaVacunacionPage from './pages/CartillaVacunacionPage';
 import AlertasPage from './pages/AlertasPage';
+import SettingsPage from './pages/SettingsPage';
+import ProfileSecurityPage from './pages/ProfileSecurityPage';
 
 const PAGE_METADATA = {
   '/': {
@@ -36,9 +38,17 @@ const PAGE_METADATA = {
     title: 'Integrantes',
     description: 'Consulta y administra los integrantes de tu familia.',
   },
-  '/cuidadores': {
+  '/configuracion/cuidadores': {
     title: 'Cuidadores',
     description: 'Administra los cuidadores de tu familia.',
+  },
+  '/configuracion/perfil': {
+    title: 'Perfil y seguridad',
+    description: 'Consulta y administra tus datos personales y opciones de seguridad.',
+  },
+  '/configuracion': {
+    title: 'Configuración',
+    description: 'Administra las opciones de configuración de tu cuenta y familia.',
   },
   '/consultas': {
     title: 'Consultas',
@@ -102,7 +112,10 @@ function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/medicamentos" element={<MedicamentosPage />} />
         <Route path="/integrantes" element={<IntegrantesPage />} />
-        <Route path="/cuidadores" element={<CuidadoresPage />} />
+        <Route path="/cuidadores" element={<Navigate to="/configuracion/cuidadores" replace />} />
+        <Route path="/configuracion" element={<SettingsPage />} />
+        <Route path="/configuracion/cuidadores" element={<CuidadoresPage />} />
+        <Route path="/configuracion/perfil" element={<ProfileSecurityPage />} />
         <Route path="/consultas" element={<ConsultasPage />} />
         <Route path="/stock" element={<StockPage />} />
         <Route path="/alertas" element={<AlertasPage />} />
