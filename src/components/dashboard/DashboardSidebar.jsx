@@ -51,28 +51,13 @@ function DashboardSidebar({ familyName, onLogout }) {
     return () => { cancelled = true; };
   }, []);
 
-  const fullName = user
-    ? [user.nombre, user.apellidoPaterno, user.apellidoMaterno].filter(Boolean).join(' ')
-    : familyName || 'Usuario';
   const visibleItems = navigationItems.filter((item) => !item.adminOnly || user?.rol === 'ADMIN');
-  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=d4f1eb&color=126f7b&bold=true`;
-  const role = user?.rol?.replaceAll('_', ' ') || 'Administrador';
 
   return (
     <aside className="flex w-full shrink-0 flex-col border-b border-[#0b2c3d] bg-gradient-to-b from-[#134660] to-[#0b2c3d] shadow-xl shadow-[#0b2c3d]/20 lg:fixed lg:inset-y-0 lg:left-0 lg:w-72 lg:border-b-0 lg:border-r lg:border-[#0b2c3d]">
       <div className="flex items-center gap-2.5 border-b border-white/10 px-5 py-5 text-lg font-bold tracking-tight text-white lg:px-7">
         <img src="/logo-icon.svg" alt="MiSalud Familiar" className="size-9 rounded-xl" />
         MiSalud Familiar
-      </div>
-
-      <div className="hidden px-5 py-5 lg:block">
-        <div className="flex items-center gap-3 rounded-2xl bg-white/10 p-3 ring-1 ring-white/10">
-          <img src={avatarUrl} alt={`Avatar de ${fullName}`} className="size-10 rounded-xl" />
-          <div className="min-w-0">
-            <p className="truncate text-sm font-bold text-white">{role}</p>
-            <p className="truncate text-xs text-slate-300">{user?.correo || 'Sesión activa'}</p>
-          </div>
-        </div>
       </div>
 
       <nav className="scrollbar-none flex gap-1 overflow-x-auto px-4 py-3 lg:block lg:flex-1 lg:space-y-1 lg:overflow-y-auto lg:overflow-x-hidden lg:px-4" aria-label="Navegación principal">

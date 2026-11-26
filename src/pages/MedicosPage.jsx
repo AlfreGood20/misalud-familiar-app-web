@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import DashboardSidebar from '../components/dashboard/DashboardSidebar';
 import MedicoCard from '../components/medicos/MedicoCard';
-import MedicoFilters from '../components/medicos/MedicoFilters';
 import MedicoFormModal from '../components/medicos/MedicoFormModal';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
 import { getCurrentUser } from '../services/authService';
@@ -20,18 +19,12 @@ const emptyMedico = {
   especialidadesIds: [],
 };
 
-const initialFilters = { busqueda: '', especialidad: '' };
-
-function normalize(text) {
-  return String(text ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-}
 
 function MedicosPage() {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(null);
   const [medicos, setMedicos] = useState([]);
   const [specialties, setSpecialties] = useState([]);
-  const [filters, setFilters] = useState(initialFilters);
   const [formVisible, setFormVisible] = useState(false);
   const [formData, setFormData] = useState(emptyMedico);
   const [loading, setLoading] = useState(true);
@@ -79,11 +72,6 @@ function MedicosPage() {
       toast.error('No se pudo actualizar la lista de médicos.');
       console.error('Error al recargar médicos:', error);
     }
-  };
-
-  const handleFilterChange = (event) => {
-    const { name, value } = event.target;
-    setFilters((current) => ({ ...current, [name]: value }));
   };
 
   const handleFormChange = (event) => {
@@ -141,15 +129,6 @@ function MedicosPage() {
     }
   };
 
-  const search = normalize(filters.busqueda);
-  const visibleMedicos = medicos.filter((medico) => {
-    const text = normalize([medico.nombre, medico.apellidoPaterno, medico.apellidoMaterno, medico.telefono, medico.correo].join(' '));
-    const matchesText = !search || text.includes(search);
-    const matchesSpecialty = !filters.especialidad
-      || (medico.especialidades ?? []).some((specialty) => String(specialty.id) === filters.especialidad);
-    return matchesText && matchesSpecialty;
-  });
-
   const coveredSpecialties = new Set(
     medicos.flatMap((medico) => (medico.especialidades ?? []).map((specialty) => specialty.id)),
   ).size;
@@ -200,29 +179,22 @@ function MedicosPage() {
               </div>
             </div>
 
-            <MedicoFilters
-              filters={filters}
-              specialties={specialties}
-              onChange={handleFilterChange}
-              onClear={() => setFilters(initialFilters)}
-            />
-
             <div className="mt-8">
-              {visibleMedicos.length === 0 ? (
+              {medicos.length === 0 ? (
                 <div className="card border border-dashed border-slate-300 bg-white">
                   <div className="card-body items-center py-16 text-center">
                     <UserGroupIcon className="size-12 text-slate-300" />
                     <h2 className="mt-3 text-lg font-bold text-[#19304a]">
-                      {medicos.length === 0 ? 'No hay médicos registrados' : 'Sin resultados'}
+                      No hay médicos registrados
                     </h2>
                     <p className="text-sm text-slate-500">
-                      {medicos.length === 0 ? 'Agrega un médico para poder asignarlo a tus consultas.' : 'Prueba con otros filtros de búsqueda.'}
+                      Agrega un médico para poder asignarlo a tus consultas.
                     </p>
                   </div>
                 </div>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                  {visibleMedicos.map((medico) => (
+                  {medicos.map((medico) => (
                     <MedicoCard key={medico.id} medico={medico} onDelete={setToDelete} />
                   ))}
                 </div>
