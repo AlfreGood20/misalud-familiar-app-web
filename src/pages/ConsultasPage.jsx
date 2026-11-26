@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import { CalendarDaysIcon, ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import DashboardSidebar from '../components/dashboard/DashboardSidebar';
 import ConsultaCard from '../components/consultas/ConsultaCard';
 import ConsultaDetailsModal from '../components/consultas/ConsultaDetailsModal';
 import ConsultaFormModal from '../components/consultas/ConsultaFormModal';
 import ConcludeConsultaModal from '../components/consultas/ConcludeConsultaModal';
 import ConsultaFilters from '../components/consultas/ConsultaFilters';
+import ConfirmDialog from '../components/ui/ConfirmDialog';
 import { getIntegrantes } from '../services/memberService';
 import { getMedicos } from '../services/medicoService';
 import {
-  cancelConsulta, concludeConsulta, createConsulta, getConsultaById, getConsultas, updateConsulta,
+  cancelConsulta, concludeConsulta, createConsulta, deleteConsulta, getConsultaById, getConsultas, updateConsulta,
 } from '../services/consultaService';
 
 const initialFilters = {
@@ -45,6 +46,7 @@ function isFutureDate(value) {
 
 function ConsultasPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [filters, setFilters] = useState(initialFilters);
   const [integrantes, setIntegrantes] = useState([]);
   const [medicos, setMedicos] = useState([]);
@@ -52,16 +54,23 @@ function ConsultasPage() {
   const [consultas, setConsultas] = useState([]);
   const [consultasLoading, setConsultasLoading] = useState(true);
   const [pageInfo, setPageInfo] = useState({ number: 0, totalPages: 0, totalElements: 0 });
-  const [formOpen, setFormOpen] = useState(false);
+  const [formOpen, setFormOpen] = useState(() => Boolean(location.state?.openCreateConsulta));
   const [selectedConsulta, setSelectedConsulta] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [editingConsulta, setEditingConsulta] = useState(null);
   const [concludeOpen, setConcludeOpen] = useState(false);
+  const [consultaToDelete, setConsultaToDelete] = useState(null);
   const [actionSubmitting, setActionSubmitting] = useState(false);
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [refreshToken, setRefreshToken] = useState(0);
   const [page, setPage] = useState(0);
   const pageSize = 9;
+
+  useEffect(() => {
+    if (location.state?.openCreateConsulta) {
+      navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
+    }
+  }, [location.pathname, location.search, location.state, navigate]);
 
   useEffect(() => {
     let cancelled = false;
@@ -178,6 +187,31 @@ function ConsultasPage() {
     }
   };
 
+  const handleGenerateReceta = () => {
+    const idIntegrante = selectedConsulta?.paciente?.id;
+    if (!idIntegrante) {
+      toast.error('No se pudo identificar al paciente de esta consulta.');
+      return;
+    }
+
+    setSelectedConsulta(null);
+    navigate('/recetas', { state: { openCreateReceta: true, idIntegrante } });
+  };
+
+  const handleCreateEstudio = () => {
+    const idIntegrante = selectedConsulta?.paciente?.id;
+    const idConsulta = selectedConsulta?.id;
+    if (!idIntegrante || !idConsulta) {
+      toast.error('No se pudo identificar al paciente o la consulta.');
+      return;
+    }
+
+    setSelectedConsulta(null);
+    navigate('/estudios', {
+      state: { openCreateEstudio: true, idIntegrante, idConsulta },
+    });
+  };
+
   const handleUpdateConsulta = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
@@ -248,6 +282,27 @@ function ConsultasPage() {
         } finally {
           setActionSubmitting(false);
         }
+  };
+
+  const handleDeleteConsulta = async () => {
+    if (!consultaToDelete || consultaToDelete.id === undefined || consultaToDelete.id === null) {
+      toast.error('No se pudo identificar la consulta que deseas eliminar.');
+      return;
+    }
+
+    setActionSubmitting(true);
+    try {
+      await deleteConsulta(consultaToDelete.id);
+      toast.success('Consulta eliminada correctamente.');
+      setConsultaToDelete(null);
+      setSelectedConsulta(null);
+      setRefreshToken((current) => current + 1);
+    } catch (error) {
+      toast.error(error.message || 'No se pudo eliminar la consulta.');
+      console.error('Error al eliminar consulta:', error);
+    } finally {
+      setActionSubmitting(false);
+    }
   };
 
   const handleCreateConsulta = async (event) => {
@@ -344,9 +399,22 @@ function ConsultasPage() {
         onEdit={() => { setEditingConsulta(selectedConsulta); setSelectedConsulta(null); }}
         onConclude={() => setConcludeOpen(true)}
         onCancel={handleCancelConsulta}
+        onGenerateReceta={handleGenerateReceta}
+        onCreateEstudio={handleCreateEstudio}
+        onDelete={() => setConsultaToDelete(selectedConsulta)}
+      />
+      <ConfirmDialog
+        open={consultaToDelete !== null}
+        title="Eliminar consulta"
+        message="¿Seguro que deseas eliminar esta consulta? Esta acción no se puede deshacer."
+        confirmLabel="Eliminar consulta"
+        loadingLabel="Eliminando..."
+        loading={actionSubmitting}
+        onConfirm={handleDeleteConsulta}
+        onCancel={() => !actionSubmitting && setConsultaToDelete(null)}
       />
       <ConsultaFormModal
-        open={formOpen}
+        open={formOpen && !catalogsLoading}
         integrantes={integrantes}
         medicos={medicos}
         submitting={formSubmitting}

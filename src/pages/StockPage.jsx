@@ -12,7 +12,6 @@ import StockDetailsModal from '../components/stock/StockDetailsModal';
 import StockFilters from '../components/stock/StockFilters';
 import StockFormModal from '../components/stock/StockFormModal';
 import { getCurrentUser } from '../services/authService';
-import { getMedicamentos } from '../services/medicationService';
 import {
   createStock, deleteStock, getStock, getStockById, patchStock, updateStock,
 } from '../services/stockService';
@@ -53,7 +52,6 @@ function StockPage() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [editingStock, setEditingStock] = useState(null);
-  const [medications, setMedications] = useState([]);
   const [adjustingStock, setAdjustingStock] = useState(null);
   const [confirmation, setConfirmation] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -133,17 +131,9 @@ function StockPage() {
     }
   };
 
-  const openCreate = async () => {
+  const openCreate = () => {
     setEditingStock(null);
     setFormOpen(true);
-    if (medications.length > 0) return;
-    try {
-      const response = await getMedicamentos({ page: 0, size: 100, activo: true });
-      setMedications(response.content ?? []);
-    } catch (error) {
-      toast.error('No se pudo cargar el catálogo de medicamentos.');
-      console.error('Error al cargar medicamentos:', error);
-    }
   };
 
   const openEdit = (stock) => {
@@ -159,6 +149,12 @@ function StockPage() {
   const handleFormSubmit = async (event) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    const idMedicamento = form.get('idMedicamento');
+    if (!editingStock && !idMedicamento) {
+      toast.error('Busca y selecciona un medicamento.');
+      return;
+    }
+
     setSubmitting(true);
     try {
       if (editingStock) {
@@ -171,7 +167,7 @@ function StockPage() {
         toast.success('Stock actualizado.');
       } else {
         await createStock({
-          idMedicamento: Number(form.get('idMedicamento')),
+          idMedicamento: Number(idMedicamento),
           cantidad: Number(form.get('cantidad')),
           cantidadMinima: Number(form.get('cantidadMinima')),
           fechaCaducidad: form.get('fechaCaducidad'),
@@ -296,9 +292,8 @@ function StockPage() {
 
       <StockDetailsModal stock={selectedStock} loading={detailLoading} onClose={() => setSelectedStock(null)} />
       <StockFormModal
-        key={editingStock?.id ?? 'new'}
+        key={editingStock?.id ?? `new-${formOpen}`}
         open={formOpen}
-        medications={medications}
         submitting={submitting}
         stock={editingStock}
         editing={Boolean(editingStock)}

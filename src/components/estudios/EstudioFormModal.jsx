@@ -20,14 +20,15 @@ function Label({ text, optional, children }) {
 // Crear: pide integrante y datos del estudio. Editar: además permite capturar resultados,
 // porque la API reemplaza todos los campos al actualizar.
 function EstudioFormModal({
-  open, integrantes, consultas, submitting, study, editing, onIntegranteChange, onClose, onSubmit,
+  open, integrantes, consultas, submitting, study, editing, defaultIntegrante, defaultConsulta, onIntegranteChange, onClose, onSubmit,
 }) {
-  const [integranteId, setIntegranteId] = useState(study?.integrante?.id ?? '');
-
+  const [integranteId, setIntegranteId] = useState(String(study?.integrante?.id ?? defaultIntegrante ?? ''));
+  const [consultaId, setConsultaId] = useState(String(study?.consulta?.id ?? defaultConsulta ?? ''));
   if (!open) return null;
 
   const handleIntegrante = (event) => {
     setIntegranteId(event.target.value);
+    setConsultaId('');
     onIntegranteChange(event.target.value);
   };
 
@@ -81,7 +82,7 @@ function EstudioFormModal({
           </div>
 
           <Label text="Consulta relacionada" optional>
-            <select name="idConsulta" defaultValue={study?.consulta?.id ?? ''} className={selectClass} disabled={!editing && !integranteId}>
+            <select name="idConsulta" value={consultaId} onChange={(event) => setConsultaId(event.target.value)} className={selectClass} disabled={!editing && !integranteId}>
               <option value="">Sin consulta relacionada</option>
               {consultas.map((consulta) => (
                 <option key={consulta.id} value={consulta.id}>

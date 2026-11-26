@@ -1,11 +1,15 @@
+import { useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import MedicationSearchInput from '../medicamentos/MedicationSearchInput';
 import { getTodayDate, stockUnits } from './stockOptions';
 
 // Crear: pide medicamento, cantidad, mínimo y caducidad (la unidad la define la API).
 // Editar: pide cantidad, mínimo, unidad y caducidad.
 function StockFormModal({
-  open, medications, submitting, stock, editing, onClose, onSubmit,
+  open, submitting, stock, editing, onClose, onSubmit,
 }) {
+  const [selectedMedication, setSelectedMedication] = useState(null);
+
   if (!open) return null;
 
   return (
@@ -28,17 +32,14 @@ function StockFormModal({
           </div>
 
           {!editing && (
-            <label className="label mb-2 block p-0">
-              <span className="label-text mb-1.5 block font-bold text-[#29425d]">Medicamento</span>
-              <select name="idMedicamento" className="select select-bordered w-full bg-white focus:outline-[#15919a]" required defaultValue="">
-                <option value="" disabled>Selecciona un medicamento</option>
-                {medications.map((medication) => (
-                  <option key={medication.id} value={medication.id}>
-                    {medication.nombreComercial} · {medication.sustanciaActiva} {medication.concentracion}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <div className="mb-3">
+              <MedicationSearchInput
+                inputId="stock-medicamento"
+                name="idMedicamento"
+                selectedMedication={selectedMedication}
+                onSelect={setSelectedMedication}
+              />
+            </div>
           )}
 
           <div className="grid gap-2 sm:grid-cols-2">

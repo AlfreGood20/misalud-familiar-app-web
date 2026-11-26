@@ -14,6 +14,17 @@ export async function getCurrentUser() {
   return response.json();
 }
 
+export async function postLogout() {
+  const response = await fetch(`${API_URL}/auth/logout`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error al cerrar sesión: ${response.status}`);
+  }
+}
+
 export async function postLogin(data) {
   const response = await fetch(`${API_URL}/auth/login`, {
     method: 'POST',

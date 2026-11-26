@@ -94,3 +94,25 @@ export async function cancelConsulta(idConsulta) {
 
   return response.status === 204 ? null : response.json();
 }
+
+export async function deleteConsulta(idConsulta) {
+  const response = await fetch(`${API_URL}/consultas/${idConsulta}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    let message = `Error al eliminar consulta: ${response.status}`;
+    try {
+      const body = await response.json();
+      if (typeof body?.menssaje === 'string' && body.menssaje.trim()) {
+        message = body.menssaje;
+      }
+    } catch {
+      // Si la respuesta no contiene JSON, se conserva el error HTTP.
+    }
+    throw new Error(message);
+  }
+
+  return null;
+}

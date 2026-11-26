@@ -1,7 +1,13 @@
 import { useState } from 'react';
-import { DocumentTextIcon, PlusIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import {
+  DocumentTextIcon,
+  PlusIcon,
+  TrashIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { fullName, toApiDateTime, toDateInput } from './recetaOptions';
+import MedicationSearchInput from '../medicamentos/MedicationSearchInput';
 
 const frequencyOptions = [4, 6, 8, 12, 24];
 const fieldClass = 'input input-bordered h-11 w-full bg-white transition duration-200 hover:border-[#8dd5cd] focus:outline-[#15919a]';
@@ -14,9 +20,17 @@ function defaultStart() {
 }
 
 let nextKey = 1;
-const newDetalle = () => ({ key: nextKey++, idMedicamento: '', dosis: '', frecuenciaHoras: 8, duracionDias: '', fechaHoraInicio: defaultStart() });
+const newDetalle = () => ({
+  key: nextKey++,
+  idMedicamento: '',
+  medicamentoSeleccionado: null,
+  dosis: '',
+  frecuenciaHoras: 8,
+  duracionDias: '',
+  fechaHoraInicio: defaultStart(),
+});
 
-function RecetaFormModal({ integrantes, medicamentos, defaultIntegrante, submitting, onClose, onSubmit }) {
+function RecetaFormModal({ integrantes, defaultIntegrante, submitting, onClose, onSubmit }) {
   const [idIntegrante, setIdIntegrante] = useState(defaultIntegrante || '');
   const [fechaEmision, setFechaEmision] = useState(toDateInput(new Date()));
   const [indicaciones, setIndicaciones] = useState('');
@@ -98,13 +112,16 @@ function RecetaFormModal({ integrantes, medicamentos, defaultIntegrante, submitt
                   )}
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <label className="block sm:col-span-2">
-                    <span className="mb-1 block text-xs font-bold text-slate-500">Medicamento</span>
-                    <select value={item.idMedicamento} onChange={(event) => updateDetalle(item.key, { idMedicamento: event.target.value })} className="select select-bordered h-11 w-full bg-white" required>
-                      <option value="">Selecciona…</option>
-                      {medicamentos.map((med) => <option key={med.id} value={med.id}>{med.nombreComercial}{med.concentracion ? ` · ${med.concentracion}` : ''}</option>)}
-                    </select>
-                  </label>
+                  <div className="sm:col-span-2">
+                    <MedicationSearchInput
+                      inputId={`receta-medicamento-${item.key}`}
+                      selectedMedication={item.medicamentoSeleccionado}
+                      onSelect={(medication) => updateDetalle(item.key, {
+                        idMedicamento: medication ? String(medication.id) : '',
+                        medicamentoSeleccionado: medication,
+                      })}
+                    />
+                  </div>
                   <label className="block">
                     <span className="mb-1 block text-xs font-bold text-slate-500">Dosis</span>
                     <input value={item.dosis} maxLength={100} onChange={(event) => updateDetalle(item.key, { dosis: event.target.value })} className={fieldClass} placeholder="Ej. 1 tableta" required />

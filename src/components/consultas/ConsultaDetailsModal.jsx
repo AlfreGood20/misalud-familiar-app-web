@@ -1,4 +1,4 @@
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { BeakerIcon, PlusIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const statusStyles = {
   PROGRAMADA: 'bg-[#e5f7f4] text-[#126f7b]',
@@ -33,7 +33,7 @@ function InfoItem({ label, value }) {
 }
 
 function ConsultaDetailsModal({
-  consulta, loading, actionLoading, onClose, onEdit, onConclude, onCancel,
+  consulta, loading, actionLoading, onClose, onEdit, onConclude, onCancel, onGenerateReceta, onCreateEstudio, onDelete,
 }) {
   if (!consulta) return null;
 
@@ -111,6 +111,23 @@ function ConsultaDetailsModal({
                 <button type="button" onClick={onConclude} className="btn transition-all duration-200 active:scale-95 min-w-32 border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg" disabled={actionLoading}>Concluir consulta</button>
               </>
             )}
+            {consulta.estado === 'REALIZADA' && (
+              <>
+                <button type="button" onClick={onGenerateReceta} className="btn min-w-32 border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg active:scale-95">
+                  <PlusIcon className="size-4" aria-hidden="true" /> Generar receta
+                </button>
+                <button
+                  type="button"
+                  onClick={onCreateEstudio}
+                  className="btn min-w-32 border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg active:scale-95"
+                >
+                  <BeakerIcon className="size-4" aria-hidden="true" /> Solicitar estudio
+                </button>
+              </>
+            )}
+            <button type="button" onClick={onDelete} className="btn min-w-32 btn-outline border-red-300 text-red-600 transition-all duration-200 hover:bg-red-50 active:scale-95" disabled={actionLoading}>
+              <TrashIcon className="size-4" aria-hidden="true" /> Eliminar consulta
+            </button>
           </div>
             </>
           )}

@@ -1,4 +1,4 @@
-function SummaryCard({ icon, label, value, description, tone = 'teal' }) {
+function SummaryCard({ icon, label, value, description, tone = 'teal', context = 'Este mes' }) {
   const tones = {
     teal: 'bg-[#e5f7f4] text-[#117b7b]',
     blue: 'bg-[#eaf2ff] text-[#3a67ad]',
@@ -13,7 +13,7 @@ function SummaryCard({ icon, label, value, description, tone = 'teal' }) {
           <span className={`grid size-11 place-items-center rounded-2xl transition duration-300 group-hover:scale-110 group-hover:-rotate-3 ${tones[tone]}`}>
             {icon}
           </span>
-          <span className="text-xs font-medium text-slate-400">Este mes</span>
+          <span className="text-xs font-medium text-slate-400">{context}</span>
         </div>
         <div>
           <p className="text-sm text-slate-500">{label}</p>

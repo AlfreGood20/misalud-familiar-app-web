@@ -14,31 +14,44 @@ import {
   UserGroupIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { getCurrentUser } from '../../services/authService';
-import useStockAlerts from '../stock/useStockAlerts';
-import useVaccineAlerts from '../vacunacion/useVaccineAlerts';
+import { NavLink } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { getCurrentUser, postLogout } from '../../services/authService';
+import {
+  ALERT_COUNT_UPDATED_EVENT,
+  getUnreadAlertCount,
+} from '../../services/alertService';
 
 const navigationItems = [
   { label: 'Resumen', icon: HomeIcon, to: '/dashboard' },
   { label: 'Integrantes', icon: UserGroupIcon, to: '/integrantes' },
   { label: 'Cuidadores', icon: ShieldCheckIcon, to: '/cuidadores' },
   { label: 'Consultas médicas', icon: CalendarDaysIcon, to: '/consultas' },
-  { label: 'Médicos', icon: IdentificationIcon, to: '/medicos', adminOnly: true },
+  { label: 'Médicos', icon: IdentificationIcon, to: '/medicos'},
   { label: 'Medicamentos', icon: CubeIcon, to: '/medicamentos' },
-  { label: 'Recetas y tomas', icon: DocumentTextIcon, to: '/recetas', adminOnly: true },
+  { label: 'Recetas y tomas', icon: DocumentTextIcon, to: '/recetas'},
   { label: 'Stock', icon: ArchiveBoxIcon, to: '/stock' },
   { label: 'Vacunación', icon: BeakerIcon, to: '/vacunacion' },
-  { label: 'Estudios de laboratorio', icon: ChartBarIcon, to: '/estudios', adminOnly: true },
-  { label: 'Alertas', icon: BellAlertIcon, href: '/stock' },
+  { label: 'Estudios de laboratorio', icon: ChartBarIcon, to: '/estudios' },
+  { label: 'Alertas', icon: BellAlertIcon, to: '/alertas' },
 ];
 
 function DashboardSidebar({ familyName, onLogout }) {
-  const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const { alerts } = useStockAlerts();
-  const { alerts: vaccineAlerts } = useVaccineAlerts();
-  const alertCount = alerts.length + vaccineAlerts.length;
+  const [unreadAlertCount, setUnreadAlertCount] = useState(null);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await postLogout();
+      onLogout();
+    } catch (error) {
+      toast.error(error.message || 'No se pudo cerrar la sesión.');
+      console.error('Error al cerrar sesión:', error);
+      setLoggingOut(false);
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -53,6 +66,29 @@ function DashboardSidebar({ familyName, onLogout }) {
     return () => { cancelled = true; };
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    const handleCountUpdated = (event) => {
+      if (Number.isInteger(event.detail) && event.detail >= 0) {
+        setUnreadAlertCount(event.detail);
+      }
+    };
+
+    window.addEventListener(ALERT_COUNT_UPDATED_EVENT, handleCountUpdated);
+    getUnreadAlertCount()
+      .then((count) => {
+        if (!cancelled) setUnreadAlertCount(count);
+      })
+      .catch((error) => {
+        if (!cancelled) console.error('Error al cargar el contador de alertas no leídas:', error);
+      });
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener(ALERT_COUNT_UPDATED_EVENT, handleCountUpdated);
+    };
+  }, []);
+
   const visibleItems = navigationItems.filter((item) => !item.adminOnly || user?.rol === 'ADMIN');
 
   return (
@@ -64,7 +100,7 @@ function DashboardSidebar({ familyName, onLogout }) {
 
       <nav className="scrollbar-none flex gap-1 overflow-x-auto px-4 py-3 lg:block lg:flex-1 lg:space-y-1 lg:overflow-y-auto lg:overflow-x-hidden lg:px-4" aria-label="Navegación principal">
         <p className="hidden px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 lg:block">Menú principal</p>
-        {visibleItems.map((item) => item.to ? (
+        {visibleItems.map((item) => (
           <NavLink
             key={item.label}
             to={item.to}
@@ -76,22 +112,12 @@ function DashboardSidebar({ familyName, onLogout }) {
               <>
                 <item.icon className={`size-5 ${isActive ? 'text-[#7fe0d4]' : 'text-slate-400 group-hover:text-[#7fe0d4]'}`} aria-hidden="true" />
                 <span className="whitespace-nowrap">{item.label}</span>
+                {item.label === 'Alertas' && unreadAlertCount !== null && (
+                  <span className="badge badge-sm ml-auto bg-[#fff3df] text-[#bd7419]">{unreadAlertCount}</span>
+                )}
               </>
             )}
           </NavLink>
-        ) : (
-          <button
-            key={item.label}
-            type="button"
-            onClick={() => item.href && navigate(item.href)}
-            className="group flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-300 transition duration-200 hover:bg-white/10 hover:text-white active:scale-95 lg:w-full"
-          >
-            <item.icon className="size-5 text-slate-400 group-hover:text-[#7fe0d4]" aria-hidden="true" />
-            <span className="whitespace-nowrap">{item.label}</span>
-            {item.label === 'Alertas' && alertCount > 0 && (
-              <span className="badge badge-sm ml-auto bg-[#fff3df] text-[#bd7419]">{alertCount}</span>
-            )}
-          </button>
         ))}
 
         <p className="hidden px-3 pb-2 pt-7 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 lg:block">Configuración</p>
@@ -102,14 +128,14 @@ function DashboardSidebar({ familyName, onLogout }) {
       </nav>
 
       <div className="hidden border-t border-white/10 p-4 lg:block">
-        <button type="button" onClick={onLogout} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-300 transition hover:bg-red-500/15 hover:text-red-200 active:scale-95">
-          <ArrowRightOnRectangleIcon className="size-5" aria-hidden="true" />
-          Cerrar sesión
+        <button type="button" onClick={handleLogout} disabled={loggingOut} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-300 transition hover:bg-red-500/15 hover:text-red-200 active:scale-95">
+          {loggingOut ? <span className="loading loading-spinner loading-sm" /> : <ArrowRightOnRectangleIcon className="size-5" aria-hidden="true" />}
+          {loggingOut ? 'Cerrando sesión...' : 'Cerrar sesión'}
         </button>
       </div>
-      <button type="button" onClick={onLogout} className="flex items-center justify-center gap-2 border-t border-white/10 px-4 py-3 text-sm font-semibold text-slate-300 hover:bg-red-500/15 hover:text-red-200 lg:hidden">
-        <ArrowRightOnRectangleIcon className="size-5" aria-hidden="true" />
-        Cerrar sesión
+      <button type="button" onClick={handleLogout} disabled={loggingOut} className="flex items-center justify-center gap-2 border-t border-white/10 px-4 py-3 text-sm font-semibold text-slate-300 hover:bg-red-500/15 hover:text-red-200 lg:hidden">
+        {loggingOut ? <span className="loading loading-spinner loading-sm" /> : <ArrowRightOnRectangleIcon className="size-5" aria-hidden="true" />}
+        {loggingOut ? 'Cerrando sesión...' : 'Cerrar sesión'}
       </button>
     </aside>
   );

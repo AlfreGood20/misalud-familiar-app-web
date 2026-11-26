@@ -2,7 +2,6 @@ import {
   CalendarDaysIcon,
   BeakerIcon,
   HeartIcon,
-  PhoneIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 
@@ -26,9 +25,12 @@ function MemberDetails({ member, onClose }) {
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <Detail icon={<CalendarDaysIcon />} label="Fecha de nacimiento" value={member.fechaNacimiento} />
-          <Detail icon={<BeakerIcon />} label="Tipo de sangre" value={member.tipoSangre} />
-          <Detail icon={<PhoneIcon />} label="Teléfono" value={member.telefono || 'Sin registrar'} />
-          <Detail icon={<HeartIcon />} label="Estado" value={member.estado} />
+          <Detail icon={<HeartIcon />} label="Edad" value={member.edad || 'Sin información'} />
+          <Detail icon={<BeakerIcon />} label="Tipo de sangre" value={member.tipoSangre || 'Sin información'} />
+          <Detail icon={<HeartIcon />} label="Sexo" value={member.sexo || 'Sin información'} />
+          <Detail icon={<BeakerIcon />} label="Peso" value={member.peso != null ? `${member.peso} kg` : 'Sin información'} />
+          <Detail icon={<HeartIcon />} label="Estatura" value={member.estatura != null ? `${member.estatura} cm` : 'Sin información'} />
+          <Detail icon={<CalendarDaysIcon />} label="Registro" value={member.fechaRegistro || 'Sin información'} />
         </div>
         <div className="modal-action">
           <button type="button" className="btn transition-all duration-200 active:scale-95 btn-outline" onClick={onClose}>Cerrar</button>

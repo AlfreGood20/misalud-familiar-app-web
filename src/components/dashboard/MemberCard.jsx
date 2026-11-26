@@ -19,7 +19,7 @@ function MemberCard({ member, onSelect }) {
           <h3 className="truncate font-bold text-[#19304a]">{member.nombre}</h3>
           <p className="mt-1 text-sm text-slate-500">{member.parentesco}</p>
           <div className="mt-2 flex flex-wrap gap-2 text-xs">
-            <span className="badge badge-ghost">{member.edad} años</span>
+            {member.edad && <span className="badge badge-ghost">{member.edad}</span>}
             <span className="badge badge-ghost">{member.tipoSangre}</span>
             {member.alertas > 0 && (
               <span className="badge bg-[#fff3df] text-[#bd7419]">{member.alertas} alerta</span>

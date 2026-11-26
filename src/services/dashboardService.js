@@ -1,8 +1,7 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
-// Reemplaza esta ruta por el endpoint real de resumen familiar.
 export async function getDashboardData() {
-  const response = await fetch(`${API_URL}/familias/dashboard`, {
+  const response = await fetch(`${API_URL}/dashboard`, {
     method: 'GET',
     credentials: 'include',
   });
@@ -11,5 +10,27 @@ export async function getDashboardData() {
     throw new Error(`Error al cargar el dashboard: ${response.status}`);
   }
 
-  return response.json();
+  const data = await response.json();
+  const kpiFields = [
+    'integrantesRegistrados',
+    'consultasPendientes',
+    'medicamentosEnStock',
+    'medicamentosPorCaducar',
+    'tomasHoyCompletadas',
+    'tomasHoyTotales',
+  ];
+
+  if (
+    !data
+    || typeof data.nombreFamilia !== 'string'
+    || !data.kpis
+    || !kpiFields.every((field) => Number.isFinite(data.kpis[field]))
+    || !Array.isArray(data.tomasDeHoy)
+    || !Array.isArray(data.proximasConsultas)
+    || !Array.isArray(data.integrantes)
+  ) {
+    throw new Error('La respuesta del dashboard no tiene el formato esperado.');
+  }
+
+  return data;
 }

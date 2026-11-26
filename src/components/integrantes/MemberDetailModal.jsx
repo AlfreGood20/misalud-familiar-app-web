@@ -18,14 +18,20 @@ function calculateAge(value) {
   if (Number.isNaN(birthDate.getTime())) return 'Sin información';
 
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
   let age = today.getFullYear() - birthDate.getFullYear();
-  const birthdayHasPassed = (
-    today.getMonth() > birthDate.getMonth()
-    || (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate())
-  );
+  let months = today.getMonth() - birthDate.getMonth();
+  if (today.getDate() < birthDate.getDate()) months -= 1;
+  if (months < 0) {
+    age -= 1;
+    months += 12;
+  }
+  if (age < 0) return 'Sin información';
+  if (age > 0) return `${age} ${age === 1 ? 'año' : 'años'}`;
+  if (months > 0) return `${months} ${months === 1 ? 'mes' : 'meses'}`;
 
-  if (!birthdayHasPassed) age -= 1;
-  return age >= 0 ? `${age} años` : 'Sin información';
+  const days = Math.floor((today.getTime() - birthDate.getTime()) / 86400000);
+  return `${days} ${days === 1 ? 'día' : 'días'}`;
 }
 
 function MemberDetailModal({

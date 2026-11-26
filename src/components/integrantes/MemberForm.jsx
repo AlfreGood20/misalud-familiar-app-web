@@ -109,11 +109,21 @@ function MemberForm({ value, editing, submitting, onChange, onSubmit, onCancel }
           <SectionTitle>Parentesco</SectionTitle>
           <label className="label mb-4 block p-0">
             <span className="label-text mb-1.5 block font-bold text-[#29425d]">Relación con el titular</span>
-            <select className="select select-bordered w-full bg-white transition duration-200 hover:border-[#8dd5cd] focus:outline-[#15919a]" required {...field('parentesco')}>
+            <select
+              className="select select-bordered w-full bg-white transition duration-200 hover:border-[#8dd5cd] focus:outline-[#15919a] disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500"
+              disabled={submitting || (editing && value.parentesco === 'TITULAR')}
+              required
+              {...field('parentesco')}
+            >
               <option value="">Selecciona una opción</option>
               {relationships.map((option) => <option key={option} value={option}>{option.replaceAll('_', ' ')}</option>)}
             </select>
           </label>
+          {editing && value.parentesco === 'TITULAR' && (
+            <p className="-mt-2 mb-4 rounded-xl bg-[#fff3df] px-3 py-2 text-xs font-medium text-[#8c5c15]" role="status">
+              No puedes cambiar el parentesco porque este integrante es titular.
+            </p>
+          )}
 
           <div className="flex justify-end gap-2">
             <button type="button" onClick={onCancel} className="btn btn-ghost transition-all duration-200 active:scale-95" disabled={submitting}>Cancelar</button>

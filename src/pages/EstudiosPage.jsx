@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   BeakerIcon, ChevronLeftIcon, ChevronRightIcon, LockClosedIcon, PlusIcon,
 } from '@heroicons/react/24/outline';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import DashboardSidebar from '../components/dashboard/DashboardSidebar';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
@@ -51,6 +51,11 @@ async function requestEstudios(currentFilters) {
 
 function EstudiosPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const pendingCreateRef = useRef(location.state?.openCreateEstudio ? {
+    idIntegrante: location.state.idIntegrante,
+    idConsulta: location.state.idConsulta,
+  } : null);
   const [isAdmin, setIsAdmin] = useState(null);
   const [filters, setFilters] = useState(initialFilters);
   const [queryFilters, setQueryFilters] = useState(initialFilters);
@@ -63,6 +68,7 @@ function EstudiosPage() {
   const [selectedStudy, setSelectedStudy] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [formKey, setFormKey] = useState(0);
+  const [formDefaults, setFormDefaults] = useState({ idIntegrante: '', idConsulta: '' });
   const [editingStudy, setEditingStudy] = useState(null);
   const [resultStudy, setResultStudy] = useState(null);
   const [confirmation, setConfirmation] = useState(null);
@@ -71,6 +77,39 @@ function EstudiosPage() {
   const {
     busqueda, integrante, categoria, estado, pendientes,
   } = filters;
+
+  const loadConsultas = useCallback(async (idIntegrante) => {
+    if (!idIntegrante) {
+      setConsultas([]);
+      return;
+    }
+    try {
+      const response = await getConsultas({ integrante: idIntegrante, page: 0, size: 50 });
+      setConsultas((response.content ?? []).filter((item) => item.estado !== 'CANCELADA'));
+    } catch (error) {
+      setConsultas([]);
+      toast.error('No se pudieron cargar las consultas del integrante.');
+      console.error('Error al cargar consultas:', error);
+    }
+  }, []);
+
+  const openCreate = useCallback((defaults = {}) => {
+    setEditingStudy(null);
+    setConsultas([]);
+    setFormDefaults({
+      idIntegrante: defaults.idIntegrante ? String(defaults.idIntegrante) : '',
+      idConsulta: defaults.idConsulta ? String(defaults.idConsulta) : '',
+    });
+    if (defaults.idIntegrante) loadConsultas(defaults.idIntegrante);
+    setFormKey((current) => current + 1);
+    setFormOpen(true);
+  }, [loadConsultas]);
+
+  useEffect(() => {
+    if (location.state?.openCreateEstudio) {
+      navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
+    }
+  }, [location.pathname, location.search, location.state, navigate]);
 
   useEffect(() => {
     let cancelled = false;
@@ -88,6 +127,13 @@ function EstudiosPage() {
         const response = await getIntegrantes();
         if (!cancelled) {
           setIntegrantes((response ?? []).map((item) => ({ id: item.id, label: getFullName(item) })));
+          if (pendingCreateRef.current) {
+            const request = pendingCreateRef.current;
+            pendingCreateRef.current = null;
+            setFilters((current) => ({ ...current, integrante: String(request.idIntegrante) }));
+            setQueryFilters((current) => ({ ...current, integrante: String(request.idIntegrante) }));
+            openCreate(request);
+          }
         }
       } catch (error) {
         if (!cancelled) {
@@ -101,7 +147,7 @@ function EstudiosPage() {
 
     loadUser();
     return () => { cancelled = true; };
-  }, []);
+  }, [openCreate]);
 
   useEffect(() => {
     if (!filtersInitialized.current) {
@@ -155,32 +201,10 @@ function EstudiosPage() {
     setQueryFilters(initialFilters);
   };
 
-  // Consultas del integrante para vincularlas al estudio (se excluyen las canceladas).
-  const loadConsultas = async (idIntegrante) => {
-    if (!idIntegrante) {
-      setConsultas([]);
-      return;
-    }
-    try {
-      const response = await getConsultas({ integrante: idIntegrante, page: 0, size: 50 });
-      setConsultas((response.content ?? []).filter((item) => item.estado !== 'CANCELADA'));
-    } catch (error) {
-      setConsultas([]);
-      toast.error('No se pudieron cargar las consultas del integrante.');
-      console.error('Error al cargar consultas:', error);
-    }
-  };
-
-  const openCreate = () => {
-    setEditingStudy(null);
-    setConsultas([]);
-    setFormKey((current) => current + 1);
-    setFormOpen(true);
-  };
-
   const openEdit = (study) => {
     setEditingStudy(study);
     setConsultas([]);
+    setFormDefaults({ idIntegrante: '', idConsulta: '' });
     loadConsultas(study.integrante?.id);
     setFormKey((current) => current + 1);
     setFormOpen(true);
@@ -361,6 +385,8 @@ function EstudiosPage() {
         open={formOpen}
         integrantes={integrantes}
         consultas={consultas}
+        defaultIntegrante={formDefaults.idIntegrante}
+        defaultConsulta={formDefaults.idConsulta}
         submitting={submitting}
         study={editingStudy}
         editing={Boolean(editingStudy)}

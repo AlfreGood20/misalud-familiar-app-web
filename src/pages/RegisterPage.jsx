@@ -40,6 +40,11 @@ function RegisterPage() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (registrationData.contrasena.length < 9) {
+      toast.error('La contraseña debe tener más de 8 caracteres.');
+      return;
+    }
+
     if (registrationData.fechaNacimiento > '2016-12-31') {
       toast.error('La fecha de nacimiento debe ser de 2016 o anterior.');
       return;
@@ -84,7 +89,7 @@ function RegisterPage() {
           <Field label="Teléfono" id="telefono" type="tel" icon={<PhoneIcon />} value={registrationData.telefono} onChange={handleChange} placeholder="55 1234 5678" maxLength="20" inputMode="numeric" />
         </div>
         <Field label="Correo electrónico" id="correo" type="email" icon={<AtSymbolIcon />} value={registrationData.correo} onChange={handleChange} placeholder="tu@correo.com" />
-        <Field label="Contraseña" id="contrasena" type={showPassword ? 'text' : 'password'} icon={<LockClosedIcon />} value={registrationData.contrasena} onChange={handleChange} placeholder="Mínimo 6 caracteres" minLength="6" togglePassword showPassword={showPassword} setShowPassword={setShowPassword} />
+        <Field label="Contraseña" id="contrasena" type={showPassword ? 'text' : 'password'} icon={<LockClosedIcon />} value={registrationData.contrasena} onChange={handleChange} placeholder="Mínimo 9 caracteres" minLength={9} togglePassword showPassword={showPassword} setShowPassword={setShowPassword} />
 
         <div className="my-4 flex items-center gap-2 rounded-xl bg-[#eaf8f5] p-3">
           <HeartIcon className="size-5 shrink-0 text-[#15919a]" aria-hidden="true" />

@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ClipboardDocumentListIcon,
   DocumentTextIcon,
+  FunnelIcon,
   LockClosedIcon,
   MagnifyingGlassIcon,
   PlusIcon,
 } from '@heroicons/react/24/outline';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import DashboardSidebar from '../components/dashboard/DashboardSidebar';
 import AgendaTomas from '../components/recetas/AgendaTomas';
@@ -18,7 +19,6 @@ import { fullName, shiftDay, toDateInput } from '../components/recetas/recetaOpt
 import ConfirmDialog from '../components/ui/ConfirmDialog';
 import { getCurrentUser } from '../services/authService';
 import { getIntegrantes } from '../services/memberService';
-import { getMedicamentos } from '../services/medicationService';
 import {
   createReceta,
   deleteReceta,
@@ -38,10 +38,13 @@ const PAGE_SIZE = 6;
 
 function RecetasPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const openCreateRequest = useRef(Boolean(location.state?.openCreateReceta));
   const [isAdmin, setIsAdmin] = useState(null);
   const [integrantes, setIntegrantes] = useState([]);
-  const [medicamentos, setMedicamentos] = useState([]);
-  const [idIntegrante, setIdIntegrante] = useState('');
+  const [idIntegrante, setIdIntegrante] = useState(() => (
+    location.state?.idIntegrante ? String(location.state.idIntegrante) : ''
+  ));
 
   const [day, setDay] = useState(() => toDateInput(new Date()));
   const [tomas, setTomas] = useState([]);
@@ -64,6 +67,12 @@ function RecetasPage() {
   const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
+    if (location.state?.openCreateReceta) {
+      navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
+    }
+  }, [location.pathname, location.search, location.state, navigate]);
+
+  useEffect(() => {
     let cancelled = false;
     async function init() {
       try {
@@ -71,11 +80,17 @@ function RecetasPage() {
         if (cancelled) return;
         const admin = user?.rol === 'ADMIN';
         setIsAdmin(admin);
-        if (!admin) return;
-        const [members, meds] = await Promise.all([getIntegrantes(), getMedicamentos({ size: 200 })]);
+        if (!admin) {
+          openCreateRequest.current = false;
+          return;
+        }
+        const members = await getIntegrantes();
         if (cancelled) return;
         setIntegrantes(members ?? []);
-        setMedicamentos(meds?.content ?? []);
+        if (openCreateRequest.current) {
+          setFormOpen(true);
+          openCreateRequest.current = false;
+        }
       } catch (error) {
         if (!cancelled) {
           setIsAdmin((current) => current ?? false);
@@ -198,10 +213,6 @@ function RecetasPage() {
           </div>
           {isAdmin && (
             <div className="flex flex-wrap items-center gap-3">
-              <select value={idIntegrante} onChange={(event) => { setIdIntegrante(event.target.value); setPage(0); }} className={`select select-bordered bg-white ${fieldClass}`} aria-label="Filtrar por integrante">
-                <option value="">Toda la familia</option>
-                {integrantes.map((member) => <option key={member.id} value={member.id}>{fullName(member)}</option>)}
-              </select>
               <button type="button" onClick={() => setFormOpen(true)} className="btn border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg active:scale-95">
                 <PlusIcon className="size-5" /> Nueva receta
               </button>
@@ -220,7 +231,25 @@ function RecetasPage() {
             </div>
           </div>
         ) : (
-          <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+          <div className="space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <FunnelIcon className="size-5 text-[#15919a]" aria-hidden="true" />
+                <div>
+                  <p className="font-bold text-[#19304a]">Filtrar por integrante</p>
+                  <p className="text-sm text-slate-500">Se aplica a la agenda y a las recetas.</p>
+                </div>
+              </div>
+              <select
+                value={idIntegrante}
+                onChange={(event) => { setIdIntegrante(event.target.value); setPage(0); }}
+                className={`select select-bordered w-full bg-white sm:w-auto ${fieldClass}`}
+                aria-label="Filtrar por integrante"
+              >
+                <option value="">Toda la familia</option>
+                {integrantes.map((member) => <option key={member.id} value={member.id}>{fullName(member)}</option>)}
+              </select>
+            </div>
             <AgendaTomas day={day} onDayChange={handleDayChange} tomas={tomas} loading={loadingTomas} updatingId={updatingId} onChangeEstado={handleChangeEstado} />
 
             <section aria-label="Recetas">
@@ -257,7 +286,7 @@ function RecetasPage() {
                   </div>
                 </div>
               ) : (
-                <div className={`space-y-4 transition-opacity duration-200 ${loadingRecetas ? 'opacity-60' : ''}`}>
+                <div className={`grid gap-4 transition-opacity duration-200 md:grid-cols-2 2xl:grid-cols-3 ${loadingRecetas ? 'opacity-60' : ''}`}>
                   {recetas.map((receta) => (
                     <RecetaCard key={receta.id} receta={receta} onFinalizar={setToFinalize} onDelete={setToDelete} />
                   ))}
@@ -279,7 +308,6 @@ function RecetasPage() {
       {formOpen && (
         <RecetaFormModal
           integrantes={integrantes}
-          medicamentos={medicamentos}
           defaultIntegrante={idIntegrante}
           submitting={submitting}
           onClose={() => !submitting && setFormOpen(false)}

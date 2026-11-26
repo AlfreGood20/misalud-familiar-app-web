@@ -1,13 +1,21 @@
 import {
-  CalendarDaysIcon,
   CheckIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   ClockIcon,
   ForwardIcon,
+  MoonIcon,
   ArrowUturnLeftIcon,
+  SunIcon,
 } from '@heroicons/react/24/outline';
 import { dayPeriods, formatDayLabel, formatTime, isOverdue, toDateInput, tomaStyles } from './recetaOptions';
+
+const periodIcons = {
+  madrugada: MoonIcon,
+  manana: SunIcon,
+  tarde: SunIcon,
+  noche: MoonIcon,
+};
 
 function TomaItem({ toma, highlighted, updating, onChange }) {
   const overdue = isOverdue(toma);
@@ -78,8 +86,7 @@ function AgendaTomas({ day, onDayChange, tomas, loading, updatingId, onChangeEst
         const hour = new Date(toma.fechaHoraProgramada).getHours();
         return hour >= period.range[0] && hour < period.range[1];
       }),
-    }))
-    .filter((period) => period.items.length > 0);
+    }));
 
   return (
     <section className="card border border-slate-200 bg-white shadow-sm" aria-label="Agenda de tomas">
@@ -113,30 +120,34 @@ function AgendaTomas({ day, onDayChange, tomas, loading, updatingId, onChangeEst
         <div className="mt-5">
           {loading ? (
             <div className="flex justify-center py-12"><span className="loading loading-spinner loading-lg text-[#15919a]" /></div>
-          ) : grouped.length === 0 ? (
-            <div className="flex flex-col items-center rounded-2xl border border-dashed border-slate-300 py-12 text-center">
-              <CalendarDaysIcon className="size-12 text-slate-300" aria-hidden="true" />
-              <h3 className="mt-3 font-bold text-[#19304a]">Día libre de medicamentos</h3>
-              <p className="text-sm text-slate-500">Cuando registres una receta, sus tomas aparecerán aquí.</p>
-            </div>
           ) : (
-            <div className="space-y-6">
-              {grouped.map((period) => (
-                <div key={period.key}>
-                  <h3 className="mb-3 text-xs font-bold uppercase tracking-[0.14em] text-slate-400">{period.label}</h3>
-                  <ul className="relative space-y-3 before:absolute before:bottom-2 before:left-[5px] before:top-2 before:w-px before:bg-slate-200">
-                    {period.items.map((toma) => (
-                      <TomaItem
-                        key={toma.id}
-                        toma={toma}
-                        highlighted={next?.id === toma.id}
-                        updating={updatingId === toma.id}
-                        onChange={onChangeEstado}
-                      />
-                    ))}
-                  </ul>
-                </div>
-              ))}
+            <div className="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {grouped.map((period) => {
+                const PeriodIcon = periodIcons[period.key];
+                return (
+                  <section key={period.key} className="min-w-0" aria-label={period.label}>
+                    <h3 className="mb-3 flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
+                      <PeriodIcon className="size-4 text-[#15919a]" aria-hidden="true" />
+                      {period.label}
+                    </h3>
+                    {period.items.length === 0 ? (
+                      <p className="rounded-xl border border-dashed border-slate-200 px-3 py-5 text-center text-xs text-slate-400">Sin tomas programadas</p>
+                    ) : (
+                      <ul className="relative space-y-3 before:absolute before:bottom-2 before:left-[5px] before:top-2 before:w-px before:bg-slate-200">
+                        {period.items.map((toma) => (
+                          <TomaItem
+                            key={toma.id}
+                            toma={toma}
+                            highlighted={next?.id === toma.id}
+                            updating={updatingId === toma.id}
+                            onChange={onChangeEstado}
+                          />
+                        ))}
+                      </ul>
+                    )}
+                  </section>
+                );
+              })}
             </div>
           )}
         </div>
