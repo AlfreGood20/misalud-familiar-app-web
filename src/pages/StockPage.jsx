@@ -11,7 +11,8 @@ import StockCard from '../components/stock/StockCard';
 import StockDetailsModal from '../components/stock/StockDetailsModal';
 import StockFilters from '../components/stock/StockFilters';
 import StockFormModal from '../components/stock/StockFormModal';
-import { getCurrentUser } from '../services/authService';
+import useAuth from '../auth/useAuth';
+import { isAdminRole } from '../auth/roles';
 import {
   createStock, deleteStock, getStock, getStockById, patchStock, updateStock,
 } from '../services/stockService';
@@ -41,13 +42,14 @@ async function requestStock(currentFilters) {
 
 function StockPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = isAdminRole(user?.rol);
   const [filters, setFilters] = useState(initialFilters);
   const [queryFilters, setQueryFilters] = useState(initialFilters);
   const [items, setItems] = useState([]);
   const [pageInfo, setPageInfo] = useState({ number: 0, totalPages: 0, totalElements: 0 });
   const [loading, setLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [selectedStock, setSelectedStock] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
@@ -57,14 +59,6 @@ function StockPage() {
   const [submitting, setSubmitting] = useState(false);
   const filtersInitialized = useRef(false);
   const { nombre, estado, bajoMinimo } = filters;
-
-  useEffect(() => {
-    let cancelled = false;
-    getCurrentUser().then((user) => {
-      if (!cancelled) setIsAdmin(user?.rol === 'ADMIN');
-    }).catch((error) => console.error('Error al cargar el usuario autenticado:', error));
-    return () => { cancelled = true; };
-  }, []);
 
   useEffect(() => {
     if (!filtersInitialized.current) {
@@ -202,6 +196,7 @@ function StockPage() {
   };
 
   const handleConfirm = async () => {
+    if (confirmation.type === 'delete' && !isAdmin) return;
     setSubmitting(true);
     try {
       if (confirmation.type === 'delete') {

@@ -9,6 +9,8 @@ import ConsultaFormModal from '../components/consultas/ConsultaFormModal';
 import ConcludeConsultaModal from '../components/consultas/ConcludeConsultaModal';
 import ConsultaFilters from '../components/consultas/ConsultaFilters';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
+import useAuth from '../auth/useAuth';
+import { isAdminRole } from '../auth/roles';
 import { getIntegrantes } from '../services/memberService';
 import { getMedicos } from '../services/medicoService';
 import {
@@ -47,6 +49,8 @@ function isFutureDate(value) {
 function ConsultasPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
+  const isAdmin = isAdminRole(user?.rol);
   const [filters, setFilters] = useState(initialFilters);
   const [integrantes, setIntegrantes] = useState([]);
   const [medicos, setMedicos] = useState([]);
@@ -285,6 +289,7 @@ function ConsultasPage() {
   };
 
   const handleDeleteConsulta = async () => {
+    if (!isAdmin) return;
     if (!consultaToDelete || consultaToDelete.id === undefined || consultaToDelete.id === null) {
       toast.error('No se pudo identificar la consulta que deseas eliminar.');
       return;
@@ -401,9 +406,10 @@ function ConsultasPage() {
         onCancel={handleCancelConsulta}
         onGenerateReceta={handleGenerateReceta}
         onCreateEstudio={handleCreateEstudio}
-        onDelete={() => setConsultaToDelete(selectedConsulta)}
+        isAdmin={isAdmin}
+        onDelete={isAdmin ? () => setConsultaToDelete(selectedConsulta) : undefined}
       />
-      <ConfirmDialog
+      {isAdmin && <ConfirmDialog
         open={consultaToDelete !== null}
         title="Eliminar consulta"
         message="¿Seguro que deseas eliminar esta consulta? Esta acción no se puede deshacer."
@@ -412,7 +418,7 @@ function ConsultasPage() {
         loading={actionSubmitting}
         onConfirm={handleDeleteConsulta}
         onCancel={() => !actionSubmitting && setConsultaToDelete(null)}
-      />
+      />}
       <ConsultaFormModal
         open={formOpen && !catalogsLoading}
         integrantes={integrantes}

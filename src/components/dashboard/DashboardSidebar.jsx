@@ -15,7 +15,9 @@ import {
 } from '@heroicons/react/24/outline';
 import { NavLink } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { getCurrentUser, postLogout } from '../../services/authService';
+import useAuth from '../../auth/useAuth';
+import { isAdminRole } from '../../auth/roles';
+import { postLogout } from '../../services/authService';
 import {
   ALERT_COUNT_UPDATED_EVENT,
   getUnreadAlertCount,
@@ -34,8 +36,8 @@ const navigationItems = [
   { label: 'Alertas', icon: BellAlertIcon, to: '/alertas' },
 ];
 
-function DashboardSidebar({ familyName, onLogout }) {
-  const [user, setUser] = useState(null);
+function DashboardSidebar({ onLogout }) {
+  const { user, clearAuthenticatedUser } = useAuth();
   const [unreadAlertCount, setUnreadAlertCount] = useState(null);
   const [loggingOut, setLoggingOut] = useState(false);
 
@@ -43,6 +45,7 @@ function DashboardSidebar({ familyName, onLogout }) {
     setLoggingOut(true);
     try {
       await postLogout();
+      clearAuthenticatedUser();
       onLogout();
     } catch (error) {
       toast.error(error.message || 'No se pudo cerrar la sesión.');
@@ -50,19 +53,6 @@ function DashboardSidebar({ familyName, onLogout }) {
       setLoggingOut(false);
     }
   };
-
-  useEffect(() => {
-    let cancelled = false;
-    getCurrentUser().then((result) => {
-      if (!cancelled) setUser(result);
-    }).catch((error) => {
-      if (!cancelled) {
-        console.error('Error al cargar el usuario autenticado:', error);
-      }
-    });
-
-    return () => { cancelled = true; };
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -87,7 +77,7 @@ function DashboardSidebar({ familyName, onLogout }) {
     };
   }, []);
 
-  const visibleItems = navigationItems.filter((item) => !item.adminOnly || user?.rol === 'ADMIN');
+  const visibleItems = navigationItems.filter((item) => !item.adminOnly || isAdminRole(user?.rol));
 
   return (
     <aside className="flex w-full shrink-0 flex-col border-b border-[#0b2c3d] bg-gradient-to-b from-[#134660] to-[#0b2c3d] shadow-xl shadow-[#0b2c3d]/20 lg:fixed lg:inset-y-0 lg:left-0 lg:w-72 lg:border-b-0 lg:border-r lg:border-[#0b2c3d]">

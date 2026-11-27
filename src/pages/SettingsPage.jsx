@@ -7,6 +7,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { Link, useNavigate } from 'react-router-dom';
 import DashboardSidebar from '../components/dashboard/DashboardSidebar';
+import useAuth from '../auth/useAuth';
+import { isAdminRole } from '../auth/roles';
 
 const settingsSections = [
   {
@@ -24,6 +26,8 @@ const settingsSections = [
 
 function SettingsPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = isAdminRole(user?.rol);
 
   return (
     <main className="min-h-screen bg-[#dfe8f1] lg:pl-72">
@@ -64,7 +68,7 @@ function SettingsPage() {
             );
           })}
 
-          <Link to="/configuracion/cuidadores" className="card border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-[#8dd5cd] hover:shadow-md">
+          {isAdmin && <Link to="/configuracion/cuidadores" className="card border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-[#8dd5cd] hover:shadow-md">
             <div className="card-body">
               <span className="grid size-12 place-items-center rounded-2xl bg-[#e5f7f4] text-[#126f7b]">
                 <ShieldCheckIcon className="size-6" aria-hidden="true" />
@@ -76,7 +80,7 @@ function SettingsPage() {
               <p className="text-sm leading-6 text-slate-500">Invita y administra a las personas que pueden ayudarte a cuidar la salud familiar.</p>
               <span className="btn mt-2 w-fit border-0 bg-[#126f7b] text-white">Administrar cuidadores</span>
             </div>
-          </Link>
+          </Link>}
         </div>
       </div>
     </main>

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  BeakerIcon, ChevronLeftIcon, ChevronRightIcon, LockClosedIcon, PlusIcon,
+  BeakerIcon, ChevronLeftIcon, ChevronRightIcon, PlusIcon,
 } from '@heroicons/react/24/outline';
 import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -12,7 +12,8 @@ import EstudioFilters from '../components/estudios/EstudioFilters';
 import EstudioFormModal from '../components/estudios/EstudioFormModal';
 import EstudioResultModal from '../components/estudios/EstudioResultModal';
 import { getFullName, toUpdatePayload } from '../components/estudios/estudioOptions';
-import { getCurrentUser } from '../services/authService';
+import useAuth from '../auth/useAuth';
+import { isAdminRole } from '../auth/roles';
 import { getConsultas } from '../services/consultaService';
 import {
   cargarResultadoEstudio, createEstudio, deleteEstudio, getEstudios, updateEstudio,
@@ -52,11 +53,12 @@ async function requestEstudios(currentFilters) {
 function EstudiosPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
+  const isAdmin = isAdminRole(user?.rol);
   const pendingCreateRef = useRef(location.state?.openCreateEstudio ? {
     idIntegrante: location.state.idIntegrante,
     idConsulta: location.state.idConsulta,
   } : null);
-  const [isAdmin, setIsAdmin] = useState(null);
   const [filters, setFilters] = useState(initialFilters);
   const [queryFilters, setQueryFilters] = useState(initialFilters);
   const [items, setItems] = useState([]);
@@ -114,16 +116,8 @@ function EstudiosPage() {
   useEffect(() => {
     let cancelled = false;
 
-    async function loadUser() {
+    async function loadMembers() {
       try {
-        const user = await getCurrentUser();
-        if (cancelled) return;
-        const admin = user?.rol === 'ADMIN';
-        setIsAdmin(admin);
-        if (!admin) {
-          setLoading(false);
-          return;
-        }
         const response = await getIntegrantes();
         if (!cancelled) {
           setIntegrantes((response ?? []).map((item) => ({ id: item.id, label: getFullName(item) })));
@@ -137,15 +131,13 @@ function EstudiosPage() {
         }
       } catch (error) {
         if (!cancelled) {
-          setIsAdmin(false);
-          setLoading(false);
           toast.error('No se pudieron cargar los datos iniciales.');
           console.error('Error al cargar datos de estudios:', error);
         }
       }
     }
 
-    loadUser();
+    loadMembers();
     return () => { cancelled = true; };
   }, [openCreate]);
 
@@ -164,7 +156,6 @@ function EstudiosPage() {
   }, [busqueda, integrante, categoria, estado, pendientes]);
 
   useEffect(() => {
-    if (!isAdmin) return undefined;
     let cancelled = false;
 
     async function loadPage() {
@@ -187,7 +178,7 @@ function EstudiosPage() {
 
     loadPage();
     return () => { cancelled = true; };
-  }, [queryFilters, reloadKey, isAdmin]);
+  }, [queryFilters, reloadKey]);
 
   const reload = () => setReloadKey((current) => current + 1);
 
@@ -278,6 +269,7 @@ function EstudiosPage() {
   };
 
   const handleConfirm = async () => {
+    if (confirmation.type === 'delete' && !isAdmin) return;
     setSubmitting(true);
     try {
       if (confirmation.type === 'delete') {
@@ -317,27 +309,15 @@ function EstudiosPage() {
             </h1>
             <p className="mt-2 text-slate-500">Solicita, consulta y registra los resultados de los estudios clínicos de tu familia.</p>
           </div>
-          {isAdmin && (
-            <div className="flex items-center gap-3">
-              <div className="rounded-xl bg-white px-4 py-3 text-sm text-slate-500 shadow-sm">{pageInfo.totalElements} registrados</div>
-              <button type="button" onClick={openCreate} className="btn border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg active:scale-95">
-                <PlusIcon className="size-5" /> Nuevo estudio
-              </button>
-            </div>
-          )}
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-white px-4 py-3 text-sm text-slate-500 shadow-sm">{pageInfo.totalElements} registrados</div>
+            <button type="button" onClick={openCreate} className="btn border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg active:scale-95">
+              <PlusIcon className="size-5" /> Nuevo estudio
+            </button>
+          </div>
         </div>
 
-        {isAdmin === false ? (
-          <div className="card border border-dashed border-slate-300 bg-white">
-            <div className="card-body items-center py-16 text-center">
-              <LockClosedIcon className="size-12 text-slate-300" />
-              <h2 className="mt-3 text-lg font-bold text-[#19304a]">Solo el administrador puede gestionar estudios</h2>
-              <p className="text-sm text-slate-500">Pídele al administrador de tu familia que registre o consulte los estudios.</p>
-            </div>
-          </div>
-        ) : (
-          <>
-            <EstudioFilters filters={filters} integrantes={integrantes} onChange={handleFilterChange} onClear={handleClear} />
+        <EstudioFilters filters={filters} integrantes={integrantes} onChange={handleFilterChange} onClear={handleClear} />
 
             <div className="mt-8">
               {loading ? (
@@ -361,7 +341,7 @@ function EstudiosPage() {
                         onResult={setResultStudy}
                         onEdit={openEdit}
                         onCancel={(item) => setConfirmation({ type: 'cancel', study: item })}
-                        onDelete={(item) => setConfirmation({ type: 'delete', study: item })}
+                        onDelete={isAdmin ? (item) => setConfirmation({ type: 'delete', study: item }) : undefined}
                       />
                     ))}
                   </div>
@@ -375,8 +355,6 @@ function EstudiosPage() {
                 </>
               )}
             </div>
-          </>
-        )}
       </div>
 
       <EstudioDetailsModal study={selectedStudy} onClose={() => setSelectedStudy(null)} />

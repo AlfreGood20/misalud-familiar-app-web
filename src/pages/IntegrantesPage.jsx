@@ -8,6 +8,8 @@ import MemberDetailModal from '../components/integrantes/MemberDetailModal';
 import MemberCard from '../components/integrantes/MemberCard';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
 import { emptyMember } from '../components/integrantes/memberOptions';
+import useAuth from '../auth/useAuth';
+import { isAdminRole } from '../auth/roles';
 import {
   createIntegrante, deleteIntegrante, getIntegranteById, getIntegrantes, updateIntegrante,
   addAlergiaToIntegrante, getAlergias,
@@ -15,6 +17,8 @@ import {
 
 function IntegrantesPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = isAdminRole(user?.rol);
   const [members, setMembers] = useState([]);
   const [selected, setSelected] = useState(null);
   const [formVisible, setFormVisible] = useState(false);
@@ -187,8 +191,8 @@ function IntegrantesPage() {
   return <main className="min-h-screen bg-[#dfe8f1] lg:pl-72">
     <DashboardSidebar familyName="Familia García" onLogout={() => navigate('/', { replace: true })} />
     <div className="mx-auto max-w-7xl px-5 py-8 transition-all duration-500 starting:translate-y-3 starting:opacity-0 lg:px-8">
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4"><div><p className="text-sm font-semibold text-[#15919a]">Familia</p><h1 className="mt-1 flex items-center gap-2 text-3xl font-bold text-[#19304a]"><UserGroupIcon className="size-8 text-[#15919a]" /> Integrantes</h1><p className="mt-2 text-slate-500">Administra las personas que forman parte de tu familia.</p></div><button onClick={openCreate} className="btn transition-all duration-200 active:scale-95 border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg"><PlusIcon className="size-5" /> Agregar integrante</button></div>
-      {formVisible && <MemberForm value={formData} editing={editing} submitting={submitting} onChange={(event) => setFormData((current) => ({ ...current, [event.target.name]: event.target.value }))} onSubmit={handleSubmit} onCancel={() => setFormVisible(false)} />}
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4"><div><p className="text-sm font-semibold text-[#15919a]">Familia</p><h1 className="mt-1 flex items-center gap-2 text-3xl font-bold text-[#19304a]"><UserGroupIcon className="size-8 text-[#15919a]" /> Integrantes</h1><p className="mt-2 text-slate-500">{isAdmin ? 'Administra las personas que forman parte de tu familia.' : 'Consulta la información de los integrantes de tu familia.'}</p></div>{isAdmin && <button onClick={openCreate} className="btn transition-all duration-200 active:scale-95 border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg"><PlusIcon className="size-5" /> Agregar integrante</button>}</div>
+      {isAdmin && formVisible && <MemberForm value={formData} editing={editing} submitting={submitting} onChange={(event) => setFormData((current) => ({ ...current, [event.target.name]: event.target.value }))} onSubmit={handleSubmit} onCancel={() => setFormVisible(false)} />}
       {loading ? <div className="flex justify-center py-16"><span className="loading loading-spinner loading-lg text-[#15919a]" /></div> : members.length === 0 ? <div className="card bg-white"><div className="card-body items-center py-16 text-center"><UserGroupIcon className="size-12 text-slate-300" /><h2 className="text-lg font-bold">No hay integrantes</h2><p className="text-sm text-slate-500">Agrega el primer integrante de tu familia.</p></div></div> : <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{members.map((member) => <MemberCard key={member.id} member={member} onOpen={openDetail} />)}</div>}
     </div>
     <MemberDetailModal
@@ -198,13 +202,14 @@ function IntegrantesPage() {
       allergyType={allergyType}
       allergiesLoading={allergiesLoading}
       allergySubmitting={allergySubmitting}
-      onAddAllergy={handleAddAllergy}
+      isAdmin={isAdmin}
+      onAddAllergy={isAdmin ? handleAddAllergy : undefined}
       onAllergyTypeChange={handleAllergyTypeChange}
       onClose={() => setSelected(null)}
-      onEdit={openEdit}
-      onDelete={requestDelete}
+      onEdit={isAdmin ? openEdit : undefined}
+      onDelete={isAdmin ? requestDelete : undefined}
     />
-    <ConfirmDialog
+    {isAdmin && <ConfirmDialog
       open={deleteId !== null}
       title="Eliminar integrante"
       message="¿Seguro que deseas eliminar este integrante? Esta acción no se puede deshacer."
@@ -212,7 +217,7 @@ function IntegrantesPage() {
       loading={deleteSubmitting}
       onConfirm={handleDelete}
       onCancel={() => setDeleteId(null)}
-    />
+    />}
   </main>;
 }
 

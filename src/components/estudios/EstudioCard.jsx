@@ -60,9 +60,9 @@ function EstudioCard({
               <NoSymbolIcon className="size-4" />
             </button>
           )}
-          <button type="button" onClick={() => onDelete(study)} className="btn btn-error btn-sm text-white transition-all duration-200 active:scale-95" aria-label="Eliminar">
+          {onDelete && <button type="button" onClick={() => onDelete(study)} className="btn btn-error btn-sm text-white transition-all duration-200 active:scale-95" aria-label="Eliminar">
             <TrashIcon className="size-4" />
-          </button>
+          </button>}
         </div>
 
         <button type="button" onClick={() => onSelect(study)} className="mt-3 flex items-center justify-end gap-1 text-xs font-bold text-[#126f7b]">

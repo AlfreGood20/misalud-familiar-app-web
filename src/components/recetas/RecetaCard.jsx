@@ -113,9 +113,9 @@ function RecetaCard({ receta, onFinalizar, onDelete }) {
           ) : (
             <span className="flex items-center gap-1 text-xs font-semibold text-slate-400"><CheckBadgeIcon className="size-4" /> Tratamiento cerrado</span>
           )}
-          <button type="button" onClick={() => onDelete(receta)} className="btn btn-ghost btn-sm text-red-500 transition-all duration-200 hover:bg-red-50 active:scale-95">
+          {onDelete && <button type="button" onClick={() => onDelete(receta)} className="btn btn-ghost btn-sm text-red-500 transition-all duration-200 hover:bg-red-50 active:scale-95">
             <TrashIcon className="size-4" /> Eliminar
-          </button>
+          </button>}
         </div>
       </div>
     </article>

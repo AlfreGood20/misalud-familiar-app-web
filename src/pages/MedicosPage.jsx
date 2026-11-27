@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { LockClosedIcon, PlusIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import DashboardSidebar from '../components/dashboard/DashboardSidebar';
 import MedicoCard from '../components/medicos/MedicoCard';
 import MedicoFormModal from '../components/medicos/MedicoFormModal';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
-import { getCurrentUser } from '../services/authService';
+import useAuth from '../auth/useAuth';
+import { isAdminRole } from '../auth/roles';
 import { getEspecialidades } from '../services/especialidadService';
 import { createMedico, deleteMedico, getMedicos } from '../services/medicoService';
 
@@ -22,7 +23,8 @@ const emptyMedico = {
 
 function MedicosPage() {
   const navigate = useNavigate();
-  const [isAdmin, setIsAdmin] = useState(null);
+  const { user } = useAuth();
+  const isAdmin = isAdminRole(user?.rol);
   const [medicos, setMedicos] = useState([]);
   const [specialties, setSpecialties] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
@@ -37,15 +39,6 @@ function MedicosPage() {
 
     async function loadData() {
       try {
-        const user = await getCurrentUser();
-        if (cancelled) return;
-        const admin = user?.rol === 'ADMIN';
-        setIsAdmin(admin);
-        if (!admin) {
-          setLoading(false);
-          return;
-        }
-
         const [medicosResponse, specialtiesResponse] = await Promise.all([getMedicos(), getEspecialidades()]);
         if (!cancelled) {
           setMedicos(medicosResponse ?? []);
@@ -158,14 +151,6 @@ function MedicosPage() {
 
         {loading ? (
           <div className="flex justify-center py-16"><span className="loading loading-spinner loading-lg text-[#15919a]" /></div>
-        ) : !isAdmin ? (
-          <div className="card border border-dashed border-slate-300 bg-white">
-            <div className="card-body items-center py-16 text-center">
-              <LockClosedIcon className="size-12 text-slate-300" />
-              <h2 className="mt-3 text-lg font-bold text-[#19304a]">Solo el administrador puede gestionar médicos</h2>
-              <p className="text-sm text-slate-500">Pídele al administrador de tu familia que registre o elimine médicos.</p>
-            </div>
-          </div>
         ) : (
           <>
             <div className="mb-6 grid gap-4 sm:grid-cols-2">
@@ -195,7 +180,7 @@ function MedicosPage() {
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                   {medicos.map((medico) => (
-                    <MedicoCard key={medico.id} medico={medico} onDelete={setToDelete} />
+                    <MedicoCard key={medico.id} medico={medico} onDelete={isAdmin ? setToDelete : undefined} />
                   ))}
                 </div>
               )}
@@ -203,7 +188,7 @@ function MedicosPage() {
           </>
         )}
       </div>
-      <MedicoFormModal
+      {isAdmin && <MedicoFormModal
         open={formVisible}
         value={formData}
         specialties={specialties}
@@ -212,8 +197,8 @@ function MedicosPage() {
         onToggleSpecialty={toggleSpecialty}
         onSubmit={handleSubmit}
         onCancel={() => setFormVisible(false)}
-      />
-      <ConfirmDialog
+      />}
+      {isAdmin && <ConfirmDialog
         open={toDelete !== null}
         title="Eliminar médico"
         message={`¿Seguro que deseas eliminar a ${deleteName}? Esta acción no se puede deshacer.`}
@@ -222,7 +207,7 @@ function MedicosPage() {
         loading={actionLoading}
         onConfirm={handleConfirmDelete}
         onCancel={() => !actionLoading && setToDelete(null)}
-      />
+      />}
     </main>
   );
 }

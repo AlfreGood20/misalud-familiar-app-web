@@ -14,6 +14,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import useAuth from '../auth/useAuth';
+import { isAdminRole } from '../auth/roles';
 import DashboardSidebar from '../components/dashboard/DashboardSidebar';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
 import { getIntegrantes } from '../services/memberService';
@@ -129,7 +131,7 @@ function AlertCard({ alert, onMarkRead, onDelete, mutationLoading }) {
                   <CheckIcon className="size-4" aria-hidden="true" /> Marcar leída
                 </button>
               )}
-              <button
+              {onDelete && <button
                 type="button"
                 onClick={() => onDelete(alert)}
                 disabled={mutationLoading}
@@ -137,7 +139,7 @@ function AlertCard({ alert, onMarkRead, onDelete, mutationLoading }) {
                 aria-label={`Eliminar alerta: ${presentation.label}`}
               >
                 <TrashIcon className="size-4" aria-hidden="true" /> Eliminar
-              </button>
+              </button>}
             </div>
           </div>
         </div>
@@ -148,6 +150,8 @@ function AlertCard({ alert, onMarkRead, onDelete, mutationLoading }) {
 
 function AlertasPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = isAdminRole(user?.rol);
   const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [members, setMembers] = useState([]);
   const [membersLoading, setMembersLoading] = useState(true);
@@ -321,6 +325,7 @@ function AlertasPage() {
   };
 
   const handleConfirmDelete = async () => {
+    if (!isAdmin) return;
     if (!deleteTarget) return;
 
     setMutationLoading(true);
@@ -469,7 +474,7 @@ function AlertasPage() {
                     key={alert.id}
                     alert={alert}
                     onMarkRead={handleMarkRead}
-                    onDelete={setDeleteTarget}
+                    onDelete={isAdmin ? setDeleteTarget : undefined}
                     mutationLoading={mutationLoading}
                   />
                 ))}
@@ -505,7 +510,7 @@ function AlertasPage() {
           )}
         </div>
       </div>
-      <ConfirmDialog
+      {isAdmin && <ConfirmDialog
         open={deleteTarget !== null}
         title="Eliminar alerta"
         message="Esta notificación se eliminará permanentemente. Esta acción no se puede deshacer."
@@ -514,7 +519,7 @@ function AlertasPage() {
         loading={mutationLoading}
         onConfirm={handleConfirmDelete}
         onCancel={() => !mutationLoading && setDeleteTarget(null)}
-      />
+      />}
     </main>
   );
 }

@@ -41,6 +41,7 @@ function MemberDetailModal({
   allergyType,
   allergiesLoading,
   allergySubmitting,
+  isAdmin,
   onAddAllergy,
   onAllergyTypeChange,
   onClose,
@@ -113,24 +114,28 @@ function MemberDetailModal({
                 ) : <p className="mt-2 text-sm text-slate-500">Sin alergias registradas.</p>}
               </div>
 
-              <AllergyForm
-                allergies={allergies}
-                allergyType={allergyType}
-                allergiesLoading={allergiesLoading}
-                submitting={allergySubmitting}
-                onTypeChange={onAllergyTypeChange}
-                onSubmit={onAddAllergy}
-              />
+              {isAdmin && (
+                <AllergyForm
+                  allergies={allergies}
+                  allergyType={allergyType}
+                  allergiesLoading={allergiesLoading}
+                  submitting={allergySubmitting}
+                  onTypeChange={onAllergyTypeChange}
+                  onSubmit={onAddAllergy}
+                />
+              )}
             </div>
 
-            <div className="flex shrink-0 gap-2 border-t border-slate-100 bg-white px-6 py-4">
-              <button type="button" onClick={() => onEdit(member)} className="btn transition-all duration-200 active:scale-95 btn-outline flex-1">
-                <PencilSquareIcon className="size-4" /> Actualizar
-              </button>
-              <button type="button" onClick={() => onDelete(member.id)} className="btn transition-all duration-200 active:scale-95 btn-error flex-1 text-white">
-                <TrashIcon className="size-4" /> Eliminar
-              </button>
-            </div>
+            {isAdmin && (
+              <div className="flex shrink-0 gap-2 border-t border-slate-100 bg-white px-6 py-4">
+                <button type="button" onClick={() => onEdit(member)} className="btn transition-all duration-200 active:scale-95 btn-outline flex-1">
+                  <PencilSquareIcon className="size-4" /> Actualizar
+                </button>
+                <button type="button" onClick={() => onDelete(member.id)} className="btn transition-all duration-200 active:scale-95 btn-error flex-1 text-white">
+                  <TrashIcon className="size-4" /> Eliminar
+                </button>
+              </div>
+            )}
           </>
         )}
       </div>

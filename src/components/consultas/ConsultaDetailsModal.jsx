@@ -33,7 +33,7 @@ function InfoItem({ label, value }) {
 }
 
 function ConsultaDetailsModal({
-  consulta, loading, actionLoading, onClose, onEdit, onConclude, onCancel, onGenerateReceta, onCreateEstudio, onDelete,
+  consulta, loading, actionLoading, isAdmin, onClose, onEdit, onConclude, onCancel, onGenerateReceta, onCreateEstudio, onDelete,
 }) {
   if (!consulta) return null;
 
@@ -125,9 +125,9 @@ function ConsultaDetailsModal({
                 </button>
               </>
             )}
-            <button type="button" onClick={onDelete} className="btn min-w-32 btn-outline border-red-300 text-red-600 transition-all duration-200 hover:bg-red-50 active:scale-95" disabled={actionLoading}>
+            {isAdmin && <button type="button" onClick={onDelete} className="btn min-w-32 btn-outline border-red-300 text-red-600 transition-all duration-200 hover:bg-red-50 active:scale-95" disabled={actionLoading}>
               <TrashIcon className="size-4" aria-hidden="true" /> Eliminar consulta
-            </button>
+            </button>}
           </div>
             </>
           )}

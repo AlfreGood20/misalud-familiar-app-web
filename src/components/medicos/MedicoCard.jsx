@@ -50,9 +50,9 @@ function MedicoCard({ medico, onDelete }) {
               </a>
             )}
           </div>
-          <button type="button" onClick={() => onDelete(medico)} className="btn btn-ghost btn-sm text-red-500 transition-all duration-200 hover:bg-red-50 active:scale-95" aria-label={`Eliminar a ${fullName}`}>
+          {onDelete && <button type="button" onClick={() => onDelete(medico)} className="btn btn-ghost btn-sm text-red-500 transition-all duration-200 hover:bg-red-50 active:scale-95" aria-label={`Eliminar a ${fullName}`}>
             <TrashIcon className="size-4" /> Eliminar
-          </button>
+          </button>}
         </div>
       </div>
     </article>

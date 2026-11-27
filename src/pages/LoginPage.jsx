@@ -9,10 +9,13 @@ import {
 } from '@heroicons/react/24/outline';
 import AuthLayout from '../components/AuthLayout';
 import toast from 'react-hot-toast';
-import {postLogin} from '../services/authService'
+import useAuth from '../auth/useAuth';
+import { normalizeRole } from '../auth/roles';
+import { postLogin } from '../services/authService';
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { setAuthenticatedUser } = useAuth();
   const [credentials, setCredentials] = useState({ correo: '', contrasena: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -28,11 +31,16 @@ function LoginPage() {
     setSubmitting(true);
 
     try {
-      await toast.promise(postLogin(credentials), {
+      const user = await toast.promise(postLogin(credentials), {
         loading: 'Comprobando credenciales...',
-        success: '¡Login exitoso, Bienvenido!',
+        success: (result) => {
+          const role = normalizeRole(result.rol);
+          const roleLabel = role === 'ADMIN' ? 'Administrador' : role === 'CUIDADOR' ? 'Cuidador' : role;
+          return `¡Bienvenido! Rol: ${roleLabel}`;
+        },
         error: 'Credenciales incorrectas',
       });
+      setAuthenticatedUser(user);
       navigate('/dashboard', { replace: true });
     } catch (error) {
       console.error('Error al iniciar sesión:', error);

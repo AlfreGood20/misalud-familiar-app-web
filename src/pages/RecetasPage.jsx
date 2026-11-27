@@ -5,7 +5,6 @@ import {
   ClipboardDocumentListIcon,
   DocumentTextIcon,
   FunnelIcon,
-  LockClosedIcon,
   MagnifyingGlassIcon,
   PlusIcon,
 } from '@heroicons/react/24/outline';
@@ -17,7 +16,8 @@ import RecetaCard from '../components/recetas/RecetaCard';
 import RecetaFormModal from '../components/recetas/RecetaFormModal';
 import { fullName, shiftDay, toDateInput } from '../components/recetas/recetaOptions';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
-import { getCurrentUser } from '../services/authService';
+import useAuth from '../auth/useAuth';
+import { isAdminRole } from '../auth/roles';
 import { getIntegrantes } from '../services/memberService';
 import {
   createReceta,
@@ -39,8 +39,9 @@ const PAGE_SIZE = 6;
 function RecetasPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
+  const isAdmin = isAdminRole(user?.rol);
   const openCreateRequest = useRef(Boolean(location.state?.openCreateReceta));
-  const [isAdmin, setIsAdmin] = useState(null);
   const [integrantes, setIntegrantes] = useState([]);
   const [idIntegrante, setIdIntegrante] = useState(() => (
     location.state?.idIntegrante ? String(location.state.idIntegrante) : ''
@@ -76,14 +77,6 @@ function RecetasPage() {
     let cancelled = false;
     async function init() {
       try {
-        const user = await getCurrentUser();
-        if (cancelled) return;
-        const admin = user?.rol === 'ADMIN';
-        setIsAdmin(admin);
-        if (!admin) {
-          openCreateRequest.current = false;
-          return;
-        }
         const members = await getIntegrantes();
         if (cancelled) return;
         setIntegrantes(members ?? []);
@@ -93,7 +86,6 @@ function RecetasPage() {
         }
       } catch (error) {
         if (!cancelled) {
-          setIsAdmin((current) => current ?? false);
           toast.error('No se pudo cargar la información inicial.');
           console.error('Error al iniciar recetas:', error);
         }
@@ -109,7 +101,6 @@ function RecetasPage() {
   }, [search]);
 
   useEffect(() => {
-    if (!isAdmin) return undefined;
     let cancelled = false;
     setLoadingTomas(true);
     getTomas({ fechaInicio: day, fechaFin: day, idIntegrante })
@@ -122,10 +113,9 @@ function RecetasPage() {
       })
       .finally(() => { if (!cancelled) setLoadingTomas(false); });
     return () => { cancelled = true; };
-  }, [isAdmin, day, idIntegrante, reloadKey]);
+  }, [day, idIntegrante, reloadKey]);
 
   useEffect(() => {
-    if (!isAdmin) return undefined;
     let cancelled = false;
     setLoadingRecetas(true);
     getRecetas({ page, size: PAGE_SIZE, idIntegrante, activa, busqueda: querySearch })
@@ -146,7 +136,7 @@ function RecetasPage() {
       })
       .finally(() => { if (!cancelled) setLoadingRecetas(false); });
     return () => { cancelled = true; };
-  }, [isAdmin, page, idIntegrante, activa, querySearch, reloadKey]);
+  }, [page, idIntegrante, activa, querySearch, reloadKey]);
 
   const handleDayChange = (amount) => setDay((current) => (amount === 0 ? toDateInput(new Date()) : shiftDay(current, amount)));
 
@@ -211,27 +201,14 @@ function RecetasPage() {
             </h1>
             <p className="mt-2 text-slate-500">Lleva la agenda de medicamentos del día y las recetas de tu familia en un solo lugar.</p>
           </div>
-          {isAdmin && (
-            <div className="flex flex-wrap items-center gap-3">
-              <button type="button" onClick={() => setFormOpen(true)} className="btn border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg active:scale-95">
-                <PlusIcon className="size-5" /> Nueva receta
-              </button>
-            </div>
-          )}
+          <div className="flex flex-wrap items-center gap-3">
+            <button type="button" onClick={() => setFormOpen(true)} className="btn border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg active:scale-95">
+              <PlusIcon className="size-5" /> Nueva receta
+            </button>
+          </div>
         </div>
 
-        {isAdmin === null ? (
-          <div className="flex justify-center py-16"><span className="loading loading-spinner loading-lg text-[#15919a]" /></div>
-        ) : !isAdmin ? (
-          <div className="card border border-dashed border-slate-300 bg-white">
-            <div className="card-body items-center py-16 text-center">
-              <LockClosedIcon className="size-12 text-slate-300" />
-              <h2 className="mt-3 text-lg font-bold text-[#19304a]">Solo el administrador puede gestionar recetas</h2>
-              <p className="text-sm text-slate-500">Pídele al administrador de tu familia que registre las recetas y las tomas.</p>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-6">
+        <div className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
               <div className="flex items-center gap-3">
                 <FunnelIcon className="size-5 text-[#15919a]" aria-hidden="true" />
@@ -288,7 +265,7 @@ function RecetasPage() {
               ) : (
                 <div className={`grid gap-4 transition-opacity duration-200 md:grid-cols-2 2xl:grid-cols-3 ${loadingRecetas ? 'opacity-60' : ''}`}>
                   {recetas.map((receta) => (
-                    <RecetaCard key={receta.id} receta={receta} onFinalizar={setToFinalize} onDelete={setToDelete} />
+                    <RecetaCard key={receta.id} receta={receta} onFinalizar={setToFinalize} onDelete={isAdmin ? setToDelete : undefined} />
                   ))}
                 </div>
               )}
@@ -301,8 +278,7 @@ function RecetasPage() {
                 </div>
               </div>
             </section>
-          </div>
-        )}
+        </div>
       </div>
 
       {formOpen && (
@@ -325,7 +301,7 @@ function RecetasPage() {
         onConfirm={() => runAction(() => finalizarReceta(toFinalize.id), 'Tratamiento finalizado.', 'No se pudo finalizar la receta.', setToFinalize)}
         onCancel={() => !actionLoading && setToFinalize(null)}
       />
-      <ConfirmDialog
+      {isAdmin && <ConfirmDialog
         open={toDelete !== null}
         title="Eliminar receta"
         message="Se eliminará la receta con sus medicamentos y todas sus tomas programadas. Esta acción no se puede deshacer."
@@ -334,7 +310,7 @@ function RecetasPage() {
         loading={actionLoading}
         onConfirm={() => runAction(() => deleteReceta(toDelete.id), 'Receta eliminada.', 'No se pudo eliminar la receta.', setToDelete)}
         onCancel={() => !actionLoading && setToDelete(null)}
-      />
+      />}
     </main>
   );
 }

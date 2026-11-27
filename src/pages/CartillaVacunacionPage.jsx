@@ -13,6 +13,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import useAuth from '../auth/useAuth';
+import { isAdminRole } from '../auth/roles';
 import DashboardSidebar from '../components/dashboard/DashboardSidebar';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
 import VaccineApplicationModal from '../components/vacunacion/VaccineApplicationModal';
@@ -61,7 +63,7 @@ function formatAge(months) {
   return `${years} años ${remainingMonths} meses`;
 }
 
-function VaccineAccordion({ vaccine, open, onToggle, onRegister, onEdit, onDelete }) {
+function VaccineAccordion({ vaccine, open, onToggle, onRegister, onEdit, onDelete, isAdmin }) {
   const applied = getAppliedCount(vaccine);
   const generalStatus = getGeneralStatus(vaccine);
 
@@ -105,7 +107,7 @@ function VaccineAccordion({ vaccine, open, onToggle, onRegister, onEdit, onDelet
                       );
                     })()}
                     <td>{dose.status === 'APLICADA'
-                      ? <div className="flex justify-center gap-1"><button type="button" onClick={() => onEdit(vaccine, dose)} className="btn btn-ghost btn-sm text-[#126f7b] transition-all duration-200 active:scale-95" aria-label={`Editar dosis ${dose.number}`}><PencilSquareIcon className="size-4" /></button><button type="button" onClick={() => onDelete(vaccine, dose)} className="btn btn-ghost btn-sm text-red-500 transition-all duration-200 hover:bg-red-50 active:scale-95" aria-label={`Eliminar dosis ${dose.number}`}><TrashIcon className="size-4" /></button></div>
+                      ? <div className="flex justify-center gap-1"><button type="button" onClick={() => onEdit(vaccine, dose)} className="btn btn-ghost btn-sm text-[#126f7b] transition-all duration-200 active:scale-95" aria-label={`Editar dosis ${dose.number}`}><PencilSquareIcon className="size-4" /></button>{isAdmin && <button type="button" onClick={() => onDelete(vaccine, dose)} className="btn btn-ghost btn-sm text-red-500 transition-all duration-200 hover:bg-red-50 active:scale-95" aria-label={`Eliminar dosis ${dose.number}`}><TrashIcon className="size-4" /></button>}</div>
                       : <button type="button" onClick={() => onRegister(vaccine, dose)} className="btn btn-sm border-0 bg-[#126f7b] text-white shadow-md shadow-[#126f7b]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0b5d69] hover:shadow-lg active:scale-95"><PlusIcon className="size-4" /> Registrar</button>}
                     </td>
                   </tr>
@@ -121,6 +123,8 @@ function VaccineAccordion({ vaccine, open, onToggle, onRegister, onEdit, onDelet
 
 function CartillaVacunacionPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = isAdminRole(user?.rol);
   const [member] = useState(() => {
     try {
       return JSON.parse(sessionStorage.getItem('vacunacion.cartilla.integrante')) || null;
@@ -279,6 +283,7 @@ function CartillaVacunacionPage() {
   };
 
   const handleDeleteApplication = async () => {
+    if (!isAdmin) return;
     if (!deleteTarget?.dose?.application?.id) return;
     setDeleteSubmitting(true);
     try {
@@ -358,11 +363,12 @@ function CartillaVacunacionPage() {
               <VaccineAccordion
                 key={vaccine.id}
                 vaccine={vaccine}
+                isAdmin={isAdmin}
                 open={openVaccines.includes(vaccine.id)}
                 onToggle={() => setOpenVaccines((current) => current.includes(vaccine.id) ? current.filter((id) => id !== vaccine.id) : [...current, vaccine.id])}
                 onRegister={(selectedVaccine, selectedDose) => setApplicationTarget({ vaccine: selectedVaccine, dose: selectedDose })}
                 onEdit={(selectedVaccine, selectedDose) => setApplicationTarget({ vaccine: selectedVaccine, dose: selectedDose, editing: true })}
-                onDelete={(selectedVaccine, selectedDose) => setDeleteTarget({ vaccine: selectedVaccine, dose: selectedDose })}
+                onDelete={isAdmin ? (selectedVaccine, selectedDose) => setDeleteTarget({ vaccine: selectedVaccine, dose: selectedDose }) : undefined}
               />
             ))
           )}
@@ -383,7 +389,7 @@ function CartillaVacunacionPage() {
         onClose={() => setApplicationTarget(null)}
         onSubmit={applicationTarget?.editing ? handleUpdateApplication : handleRegisterApplication}
       />
-      <ConfirmDialog
+      {isAdmin && <ConfirmDialog
         open={deleteTarget !== null}
         title="Eliminar aplicación"
         message={`¿Seguro que deseas eliminar la aplicación de ${deleteTarget?.vaccine?.name ?? 'esta vacuna'}, dosis ${deleteTarget?.dose?.number ?? ''}? Esta acción no se puede deshacer.`}
@@ -392,7 +398,7 @@ function CartillaVacunacionPage() {
         loading={deleteSubmitting}
         onConfirm={handleDeleteApplication}
         onCancel={() => !deleteSubmitting && setDeleteTarget(null)}
-      />
+      />}
     </main>
   );
 }

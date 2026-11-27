@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import AuthProvider from './auth/AuthProvider';
+import { RequireAuth, RequireRole } from './auth/RequireAuth';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
@@ -105,27 +107,33 @@ function PageMetadata() {
 function App() {
   return (
     <BrowserRouter>
-      <PageMetadata />
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/registrarme" element={<RegisterPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/medicamentos" element={<MedicamentosPage />} />
-        <Route path="/integrantes" element={<IntegrantesPage />} />
-        <Route path="/cuidadores" element={<Navigate to="/configuracion/cuidadores" replace />} />
-        <Route path="/configuracion" element={<SettingsPage />} />
-        <Route path="/configuracion/cuidadores" element={<CuidadoresPage />} />
-        <Route path="/configuracion/perfil" element={<ProfileSecurityPage />} />
-        <Route path="/consultas" element={<ConsultasPage />} />
-        <Route path="/stock" element={<StockPage />} />
-        <Route path="/alertas" element={<AlertasPage />} />
-        <Route path="/medicos" element={<MedicosPage />} />
-        <Route path="/recetas" element={<RecetasPage />} />
-        <Route path="/estudios" element={<EstudiosPage />} />
-        <Route path="/vacunacion" element={<VacunacionPage />} />
-        <Route path="/vacunacion/cartilla" element={<CartillaVacunacionPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <AuthProvider>
+        <PageMetadata />
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/registrarme" element={<RegisterPage />} />
+          <Route element={<RequireAuth />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/medicamentos" element={<MedicamentosPage />} />
+            <Route path="/integrantes" element={<IntegrantesPage />} />
+            <Route path="/configuracion" element={<SettingsPage />} />
+            <Route path="/configuracion/perfil" element={<ProfileSecurityPage />} />
+            <Route path="/consultas" element={<ConsultasPage />} />
+            <Route path="/stock" element={<StockPage />} />
+            <Route path="/alertas" element={<AlertasPage />} />
+            <Route path="/medicos" element={<MedicosPage />} />
+            <Route path="/recetas" element={<RecetasPage />} />
+            <Route path="/estudios" element={<EstudiosPage />} />
+            <Route path="/vacunacion" element={<VacunacionPage />} />
+            <Route path="/vacunacion/cartilla" element={<CartillaVacunacionPage />} />
+            <Route element={<RequireRole roles={['ADMIN']} />}>
+              <Route path="/cuidadores" element={<Navigate to="/configuracion/cuidadores" replace />} />
+              <Route path="/configuracion/cuidadores" element={<CuidadoresPage />} />
+            </Route>
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

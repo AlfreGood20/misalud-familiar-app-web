@@ -83,7 +83,7 @@ export async function postLogin(data) {
     throw new Error(`Error de autenticación: ${response.status}`);
   }
 
-  return response;
+  return response.json();
 }
 
 export async function postRegistro(data) {
